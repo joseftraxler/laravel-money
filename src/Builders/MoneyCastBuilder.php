@@ -14,7 +14,7 @@ class MoneyCastBuilder
 {
     /**
      * @param \Closure(mixed $value, Currency $currency): Money $getMoney
-     * @param \Closure(): mixed $setMoney
+     * @param \Closure(Money $money): mixed $setMoney
      */
     public function __construct(
         private readonly \Closure $getMoney,
@@ -22,6 +22,10 @@ class MoneyCastBuilder
     ) {
     }
 
+    /**
+     * @param non-empty-string|Currency $currency
+     * @return CastsAttributes<Money, Money>
+     */
     public function withCurrency(string|Currency $currency): CastsAttributes
     {
         return $this->cast(
@@ -30,19 +34,25 @@ class MoneyCastBuilder
         );
     }
 
+    /**
+     * @param non-empty-string $column
+     * @return CastsAttributes<Money, Money>
+     */
     public function withCurrencyColumn(string $column): CastsAttributes
     {
         return $this->cast(
             fn (Model $model) => $model->getAttribute($column),
-            fn (Money $money): array => [
+            fn (?Money $money): array => [
                 $column => is_null($money) ? null : $money->getCurrency()->getCode(),
             ],
         );
     }
 
     /**
-     * @param \Closure(Model $model): null|string|Currency $getCurrency
-     * @param \Closure(?Money $money): array $setCurrency
+     * @param \Closure(Model $model): mixed $getCurrency
+     * @param \Closure(?Money $money): array<string, mixed> $setCurrency
+     *
+     * @return CastsAttributes<Money,Money>
      */
     private function cast(\Closure $getCurrency, \Closure $setCurrency): CastsAttributes
     {
@@ -54,9 +64,9 @@ class MoneyCastBuilder
         ) implements CastsAttributes {
             /**
              * @param \Closure(mixed $value, Currency $currency): Money $getMoney
-             * @param \Closure(?Money $money): mixed $setMoney
-             * @param \Closure(Model $model): null|string|Currency $getCurrency
-             * @param \Closure(?Money $money): array $setCurrency
+             * @param \Closure(Money $money): mixed $setMoney
+             * @param \Closure(Model $model): mixed $getCurrency
+             * @param \Closure(?Money $money): array<string, mixed> $setCurrency
              */
             public function __construct(
                 private readonly \Closure $getMoney,
@@ -93,16 +103,20 @@ class MoneyCastBuilder
                 ];
             }
 
-            private function getCurrency($model): ?Currency
+            private function getCurrency(Model $model): ?Currency
             {
                 $currency = ($this->getCurrency)($model);
 
-                if ($currency === null) {
+                if ($currency === null || $currency === '') {
                     return null;
                 }
 
                 if (is_string($currency)) {
                     $currency = MoneyFactory::makeCurrency($currency);
+                }
+
+                if (! $currency instanceof Currency) {
+                    throw new \InvalidArgumentException('Currency must be a string or instance of Currency');
                 }
 
                 return $currency;

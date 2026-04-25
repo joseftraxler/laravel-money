@@ -6,13 +6,16 @@ namespace JosefTraxler\LaravelMoney;
 
 class Currency implements Contracts\Currency
 {
+    /** @var array<string, self> */
     private static array $instances = [];
 
+    /** @param non-empty-string $code */
     final private function __construct(
         private readonly string $code,
     ) {
     }
 
+    /** @param non-empty-string $code */
     final public static function of(string $code): self
     {
         $code = strtoupper($code);

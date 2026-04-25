@@ -27,6 +27,9 @@ trait MoneyCalculator
         );
     }
 
+    /**
+     * @param int|numeric-string $multiplier
+     */
     public function multiply(int|string $multiplier): Money
     {
         return new static(
@@ -35,9 +38,12 @@ trait MoneyCalculator
         );
     }
 
+    /**
+     * @param int|numeric-string $divisor
+     */
     public function divide(int|string $divisor): Money
     {
-        if (! is_numeric($divisor) || (float) $divisor === 0.0) {
+        if ((float) $divisor === 0.0) {
             throw new \InvalidArgumentException('Division by zero is not allowed');
         }
         return new static(

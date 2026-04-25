@@ -6,7 +6,7 @@ namespace JosefTraxler\LaravelMoney\Contracts;
 
 interface MoneyFormatter
 {
-    public function humanReadableAmount(Money|\Money\Money $money): string;
+    public function humanReadableAmount(Money $money): string;
 
     public function humanReadableCurrency(Currency|Money $currencyOrMoney): string;
 

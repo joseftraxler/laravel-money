@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace JosefTraxler\LaravelMoney;
 
 use Illuminate\Contracts\Database\Eloquent\Castable;
+use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Facades\App;
 use JosefTraxler\LaravelMoney\Casts\AsMoney;
 use JosefTraxler\LaravelMoney\Contracts\Currency;
 use JosefTraxler\LaravelMoney\Contracts\MoneyFormatter;
@@ -15,6 +17,7 @@ class Money implements Contracts\Money, Castable, Htmlable
 {
     use MoneyCalculator;
 
+    /** @var numeric-string */
     private readonly string $amount;
     private readonly Currency $currency;
 
@@ -39,10 +42,10 @@ class Money implements Contracts\Money, Castable, Htmlable
     }
 
     /**
-     * @param array{0?: string, 1?: "decimal"|"cents"} $arguments
-     * @return \Illuminate\Contracts\Database\Eloquent\CastsAttributes|\Illuminate\Contracts\Database\Eloquent\CastsInboundAttributes|string
+     * @param array{0?: non-empty-string, 1?: "decimal"|"cents"} $arguments
+     * @return CastsAttributes<Contracts\Money, Contracts\Money>
      */
-    public static function castUsing(array $arguments)
+    public static function castUsing(array $arguments): CastsAttributes
     {
         $currency = (string) (
             $arguments[0]
@@ -62,6 +65,8 @@ class Money implements Contracts\Money, Castable, Htmlable
 
     public function toHtml()
     {
-        return App::make(MoneyFormatter::class)->humanReadable($this);
+        /** @var MoneyFormatter $formatter */
+        $formatter = App::make(MoneyFormatter::class);
+        return $formatter->humanReadable($this);
     }
 }

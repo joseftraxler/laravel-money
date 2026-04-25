@@ -315,7 +315,7 @@ final class FakeApplication implements Application, ArrayAccess
             return new \JosefTraxler\LaravelMoney\Formatters\MoneyFormatter();
         }
         if ($abstract === \JosefTraxler\LaravelMoney\Contracts\Money::class) {
-            $cents = $parameters['cents'];
+            $cents = $parameters['amount'];
             $currency = $parameters['currency'];
             return new Money($cents, $currency instanceof Currency ? $currency : $this->make(Currency::class, ['code' => $currency]));
         }
