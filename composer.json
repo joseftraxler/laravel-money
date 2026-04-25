@@ -34,6 +34,7 @@
         "php": ">=8.4",
         "illuminate/support": ">=12",
         "illuminate/contracts": ">=12",
+        "illuminate/database": ">=12",
         "moneyphp/money": "^4.8"
     },
     "require-dev": {
@@ -53,7 +54,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "JosefTraxler\\LaravelMoney\\LaravelMoneyProvider"
+                "JosefTraxler\\LaravelMoney\\Providers\\LaravelMoneyProvider"
             ]
         }
     },

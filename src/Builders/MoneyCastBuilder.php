@@ -1,0 +1,112 @@
+<?php
+
+declare(strict_types=1);
+
+namespace JosefTraxler\LaravelMoney\Builders;
+
+use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Database\Eloquent\Model;
+use JosefTraxler\LaravelMoney\Contracts\Currency;
+use JosefTraxler\LaravelMoney\Contracts\Money;
+use JosefTraxler\LaravelMoney\MoneyFactory;
+
+class MoneyCastBuilder
+{
+    /**
+     * @param \Closure(mixed $value, Currency $currency): Money $getMoney
+     * @param \Closure(): mixed $setMoney
+     */
+    public function __construct(
+        private readonly \Closure $getMoney,
+        private readonly \Closure $setMoney,
+    ) {
+    }
+
+    public function withCurrency(string|Currency $currency): CastsAttributes
+    {
+        return $this->cast(
+            fn (Model $model) => $currency,
+            fn (?Money $money) => [],
+        );
+    }
+
+    public function withCurrencyColumn(string $column): CastsAttributes
+    {
+        return $this->cast(
+            fn (Model $model) => $model->getAttribute($column),
+            fn (Money $money): array => [
+                $column => is_null($money) ? null : $money->getCurrency()->getCode(),
+            ],
+        );
+    }
+
+    /**
+     * @param \Closure(Model $model): null|string|Currency $getCurrency
+     * @param \Closure(?Money $money): array $setCurrency
+     */
+    private function cast(\Closure $getCurrency, \Closure $setCurrency): CastsAttributes
+    {
+        return new class (
+            $this->getMoney,
+            $this->setMoney,
+            $getCurrency,
+            $setCurrency,
+        ) implements CastsAttributes {
+            /**
+             * @param \Closure(mixed $value, Currency $currency): Money $getMoney
+             * @param \Closure(?Money $money): mixed $setMoney
+             * @param \Closure(Model $model): null|string|Currency $getCurrency
+             * @param \Closure(?Money $money): array $setCurrency
+             */
+            public function __construct(
+                private readonly \Closure $getMoney,
+                private readonly \Closure $setMoney,
+                private readonly \Closure $getCurrency,
+                private readonly \Closure $setCurrency,
+            ) {
+            }
+
+            public function get($model, string $key, $value, array $attributes)
+            {
+                if ($value === null) {
+                    return null;
+                }
+
+                $currency = $this->getCurrency($model);
+
+                if ($currency === null) {
+                    return null;
+                }
+
+                return ($this->getMoney)($value, $currency);
+            }
+
+            public function set($model, string $key, $value, array $attributes)
+            {
+                if (! $value instanceof Money) {
+                    return $value;
+                }
+
+                return [
+                    $key => ($this->setMoney)($value),
+                    ...($this->setCurrency)($value),
+                ];
+            }
+
+            private function getCurrency($model): ?Currency
+            {
+                $currency = ($this->getCurrency)($model);
+
+                if ($currency === null) {
+                    return null;
+                }
+
+                if (is_string($currency)) {
+                    $currency = MoneyFactory::makeCurrency($currency);
+                }
+
+                return $currency;
+            }
+        };
+    }
+}
