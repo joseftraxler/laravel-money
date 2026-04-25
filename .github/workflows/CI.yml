@@ -4,8 +4,6 @@ on:
     push:
         branches:
             - "main"
-            - "v*.x-alpha"
-            - "v*.x-beta"
             - "v*.x"
             - "v*.x-*"
 
