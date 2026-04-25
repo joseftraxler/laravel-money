@@ -11,7 +11,6 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 abstract class TestCase extends BaseTestCase
 {
     public Stubs\FakeApplication $app;
-    public Stubs\FakeTranslator $translator;
 
     protected function setUp(): void
     {
@@ -20,6 +19,5 @@ abstract class TestCase extends BaseTestCase
         Facade::setFacadeApplication(new Stubs\FakeApplication());
 
         $this->app = App::getFacadeRoot();
-        $this->translator = App::make('translator');
     }
 }

@@ -6,7 +6,9 @@ namespace Tests\Stubs;
 
 use ArrayAccess;
 use Illuminate\Contracts\Foundation\Application;
-use JosefTraxler\LaravelEnumTranslator\Translator;
+use JosefTraxler\LaravelMoney\Contracts\Currency;
+use JosefTraxler\LaravelMoney\Contracts\MoneyFormatter;
+use JosefTraxler\LaravelMoney\Money;
 
 /**
  * @implements ArrayAccess<string,mixed>
@@ -21,6 +23,10 @@ final class FakeApplication implements Application, ArrayAccess
         $this->instances['app'] = $this;
         $this->instances[Application::class] = $this;
         $this->instances[\Illuminate\Contracts\Container\Container::class] = $this;
+
+        $config = new FakeConfig();
+        $this->instances['config'] = $config;
+        $this->instances[\Illuminate\Contracts\Config\Repository::class] = $config;
     }
 
     public function version()
@@ -302,6 +308,17 @@ final class FakeApplication implements Application, ArrayAccess
      */
     public function make($abstract, array $parameters = [])
     {
+        if ($abstract === Currency::class) {
+            return \JosefTraxler\LaravelMoney\Currency::of($parameters['code']);
+        }
+        if ($abstract === MoneyFormatter::class) {
+            return new \JosefTraxler\LaravelMoney\Formatters\MoneyFormatter();
+        }
+        if ($abstract === \JosefTraxler\LaravelMoney\Contracts\Money::class) {
+            $cents = $parameters['cents'];
+            $currency = $parameters['currency'];
+            return new Money($cents, $currency instanceof Currency ? $currency : $this->make(Currency::class, ['code' => $currency]));
+        }
         return $this->instances[$abstract]
             ?? throw new \RuntimeException("Failed to resolve {$abstract}");
     }
