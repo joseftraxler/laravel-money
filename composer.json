@@ -1,0 +1,62 @@
+{
+    "name": "joseftraxler/laravel-money",
+    "description": "Lightweight money and currency utilities for Laravel applications.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "laravel",
+        "cast",
+        "money",
+        "currency",
+        "attribute"
+    ],
+    "homepage": "https://github.com/JosefTraxler/laravel-money",
+    "support": {
+        "issues": "https://github.com/JosefTraxler/laravel-money/issues",
+        "source": "https://github.com/JosefTraxler/laravel-money"
+    },
+    "authors": [
+        {
+            "name": "Josef Traxler"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "JosefTraxler\\LaravelMoney\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.4",
+        "illuminate/support": ">=12",
+        "illuminate/contracts": ">=12",
+        "moneyphp/money": "^4.8"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "phpstan/phpstan": "^2.1",
+        "pestphp/pest": "^4.6"
+    },
+    "conflict": {
+        "illuminate/database": "<12"
+    },
+    "scripts": {
+        "cs-fix": "php-cs-fixer fix",
+        "cs": "php-cs-fixer check",
+        "stan": "phpstan analyse src -l max",
+        "test": "pest"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "JosefTraxler\\LaravelMoney\\LaravelMoneyProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
