@@ -9,6 +9,14 @@
 
 A lightweight, zero-configuration Laravel package that provides simple and elegant working with Money.
 
+@todo Add description
+
+@todo Add installation instructions
+
+@todo Add example usages
+
+
+
 ## Contributing
 
 Contributions are welcome! Please ensure:
