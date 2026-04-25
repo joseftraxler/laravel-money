@@ -41,6 +41,11 @@ class Money implements Contracts\Money, Castable, Htmlable
         return $this->currency;
     }
 
+    public static function fromDecimal(float|string $decimal, string|Currency $currency): Contracts\Money
+    {
+        return MoneyFactory::makeMoneyFromDecimal($decimal, $currency);
+    }
+
     /**
      * @param array{0?: non-empty-string, 1?: "decimal"|"cents"} $arguments
      * @return CastsAttributes<Contracts\Money, Contracts\Money>
