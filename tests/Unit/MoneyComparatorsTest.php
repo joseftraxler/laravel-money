@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use JosefTraxler\LaravelMoney\Currency;
 use JosefTraxler\LaravelMoney\Money;
 
@@ -30,4 +32,3 @@ it('returns true when comparing lesser money amount with lessThan()')
 it('returns true when comparing lesser money amount with lessThanOrEqual()')
     ->assertTrue($eur1->lessThanOrEqual($eur2))
 ;
-

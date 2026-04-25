@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use JosefTraxler\LaravelMoney\Currency;
 use JosefTraxler\LaravelMoney\Money;
 
@@ -31,6 +33,6 @@ it('divides money amount by a number correctly')
     ->toBe("300");
 
 it('throws exception when divide by zero')
-    ->expect(fn() => $usd6->divide(0))
+    ->expect(fn () => $usd6->divide(0))
     ->throws(\InvalidArgumentException::class)
 ;

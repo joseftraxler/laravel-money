@@ -37,7 +37,7 @@ trait MoneyCalculator
 
     public function divide(int|string $divisor): Money
     {
-        if ( ! is_numeric($divisor) || (float) $divisor === 0.0) {
+        if (! is_numeric($divisor) || (float) $divisor === 0.0) {
             throw new \InvalidArgumentException('Division by zero is not allowed');
         }
         return new static(

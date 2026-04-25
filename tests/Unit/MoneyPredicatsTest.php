@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use JosefTraxler\LaravelMoney\Currency;
 use JosefTraxler\LaravelMoney\Money;
 
@@ -31,6 +33,3 @@ it('returns false for isPositive when amount is zero')
 
 it('returns false for isNegative when amount is zero')
     ->assertFalse((new Money(0, $eur))->isNegative());
-
-
-

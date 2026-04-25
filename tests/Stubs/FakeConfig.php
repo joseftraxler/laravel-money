@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Stubs;
 
-use ArrayAccess;
 use Illuminate\Contracts\Config\Repository;
-use Illuminate\Contracts\Foundation\Application;
-use JosefTraxler\LaravelMoney\Contracts\Currency;
-use JosefTraxler\LaravelMoney\Contracts\MoneyFormatter;
 
 final class FakeConfig implements Repository
 {

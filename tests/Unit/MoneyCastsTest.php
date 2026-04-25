@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use JosefTraxler\LaravelMoney\Currency;
 use JosefTraxler\LaravelMoney\Money;
 
@@ -123,4 +125,3 @@ it('returns null when currency column is null', function () {
 
     expect($model->paid)->toBeNull();
 });
-
