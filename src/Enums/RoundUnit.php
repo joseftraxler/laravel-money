@@ -28,29 +28,29 @@ enum RoundUnit
     case HundredBillion;
     case Trillion;
 
+    /** @return positive-int */
     public function toCentsUnit(string|Currency $currency): int
     {
+        /** @var positive-int */
         return match ($this) {
             self::Cent => 0,
             self::TenCents => 1,
             self::HundredCents => 2,
             self::ThousandCents => 3,
             self::TenThousandsCents => 4,
-            default => null
-        } ?? MoneyFactory::currencyPrecision($currency) + match ($this) {
-            self::MajorUnit => 0,
-            self::Ten => 1,
-            self::Hundred => 2,
-            self::Thousand => 3,
-            self::TenThousands => 4,
-            self::HundredThousands => 5,
-            self::Million => 6,
-            self::TenMillion => 7,
-            self::HundredMillion => 8,
-            self::Billion => 9,
-            self::TenBillion => 10,
-            self::HundredBillion => 11,
-            self::Trillion => 12,
+            self::MajorUnit => 0 + MoneyFactory::currencyPrecision($currency),
+            self::Ten => 1 + MoneyFactory::currencyPrecision($currency),
+            self::Hundred => 2 + MoneyFactory::currencyPrecision($currency),
+            self::Thousand => 3 + MoneyFactory::currencyPrecision($currency),
+            self::TenThousands => 4 + MoneyFactory::currencyPrecision($currency),
+            self::HundredThousands => 5 + MoneyFactory::currencyPrecision($currency),
+            self::Million => 6 + MoneyFactory::currencyPrecision($currency),
+            self::TenMillion => 7 + MoneyFactory::currencyPrecision($currency),
+            self::HundredMillion => 8 + MoneyFactory::currencyPrecision($currency),
+            self::Billion => 9 + MoneyFactory::currencyPrecision($currency),
+            self::TenBillion => 10 + MoneyFactory::currencyPrecision($currency),
+            self::HundredBillion => 11 + MoneyFactory::currencyPrecision($currency),
+            self::Trillion => 12 + MoneyFactory::currencyPrecision($currency),
         };
     }
 
