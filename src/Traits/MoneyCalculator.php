@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace JosefTraxler\LaravelMoney\Traits;
 
 use JosefTraxler\LaravelMoney\Contracts\Money;
+use JosefTraxler\LaravelMoney\Enums\RoundMode;
+use JosefTraxler\LaravelMoney\Enums\RoundUnit;
 
 /**
  * @phpstan-require-implements Money
@@ -95,6 +97,14 @@ trait MoneyCalculator
     public function compare(Money $money): int
     {
         return self::toMoneyPhp($this)->compare(self::toMoneyPhp($money));
+    }
+
+    public function round(RoundMode $mode = RoundMode::HalfUp, RoundUnit $unit = RoundUnit::MajorUnit): Money
+    {
+        return new static(
+            self::toMoneyPhp($this)->roundToUnit($unit->toCentsUnit($this->getCurrency()), $mode->value)->getAmount(),
+            $this->getCurrency(),
+        );
     }
 
     private static function toMoneyPhp(Money $money): \Money\Money

@@ -49,11 +49,9 @@ final class MoneyFactory
      */
     public static function decimalToCents(string|float $decimal, string|Contracts\Currency $code): string
     {
-        $currencyCode = $code instanceof Contracts\Currency ? $code->getCode() : $code;
-        /** @var scalar $precision */
-        $precision = Config::get('money.precisions.' . $currencyCode, 2);
+        $precision = self::currencyPrecision($code);
 
-        $multiplier = 10 ** (int) $precision;
+        $multiplier = 10 ** $precision;
 
         return sprintf('%d', round((float) $decimal * $multiplier));
     }
@@ -63,12 +61,20 @@ final class MoneyFactory
      */
     public static function moneyToDecimal(Contracts\Money $money): string
     {
-        /** @var scalar $precision */
-        $precision = Config::get('money.precisions.' . $money->getCurrency()->getCode(), 2);
+        $precision = self::currencyPrecision($money->getCurrency());
 
-        $multiplier = 10 ** (int) $precision;
+        $multiplier = 10 ** $precision;
 
         /** @var numeric-string */
         return sprintf('%0.' . $precision . 'f', $money->getAmount() / $multiplier);
+    }
+
+    public static function currencyPrecision(Contracts\Currency|string $currency): int
+    {
+        if ($currency instanceof Contracts\Currency) {
+            $currency = $currency->getCode();
+        }
+        /** @var int */
+        return Config::get('money.precisions.' . $currency, 2);
     }
 }
