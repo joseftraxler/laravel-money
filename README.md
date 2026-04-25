@@ -7,15 +7,66 @@
 ![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
 [![CI](https://github.com/joseftraxler/laravel-money/actions/workflows/CI.yml/badge.svg)](https://github.com/joseftraxler/laravel-money/actions/workflows/CI.yml)
 
-A lightweight, zero-configuration Laravel package that provides simple and elegant working with Money.
+A lightweight, zero-configuration Laravel package that provides simple and elegant working with Money (based on [moneyphp/money](https://github.com/moneyphp/money) values in Laravel
+applications. Handle monetary values with precision using Eloquent casts that support both decimal and cents formats,
+with flexible currency management.
 
-@todo Add description
+## Features
 
-@todo Add installation instructions
+- 💰 **Precise Money Handling**: Store and retrieve monetary values without floating-point precision issues
+- 🔄 **Flexible Storage**: Support for both decimal and cents (integer) storage formats
+- 🌍 **Currency Management**: Built-in currency support with flexible configuration options
+- 🎯 **Type-Safe**: Full type safety with proper Money and Currency contracts
+- ⚡ **Zero Configuration**: Works out of the box with sensible defaults
+- 🏗️ **Laravel Integration**: Seamless integration with Eloquent models through custom casts
 
-@todo Add example usages
+## Installation
 
+You can install the package via composer:
 
+```bash
+composer require joseftraxler/laravel-money
+```
+
+## Usage
+
+### Working with Money
+
+```php
+use JosefTraxler\LaravelMoney\Currency;
+use JosefTraxler\LaravelMoney\Money;
+
+$oneCent = new Money(1, Currency::of('USD'));
+$oneDollar = new Money(100, Currency::of('USD'));
+
+// prints $0.99
+echo $oneDollar->subtract($oneCent)->toHtml();
+```
+
+### Casting Money to and from Eloquent Models
+
+```php
+use Illuminate\Database\Eloquent\Model;
+use JosefTraxler\LaravelMoney\MoneyCast;
+
+/**
+ * @property Money $price
+ * @property Money $paid
+ * @property string $paid_currency
+ */
+class Product extends Model
+{
+    protected $casts = [
+        // Casts the decimal price attribute to Money using the default currency
+        'price' => MoneyCast::class . ':USD',
+        // Casts the paid decimal attribute to Money using the specified currency attribute
+        'paid' => MoneyCast::class . ':paid_currency',
+        // Casts the paid_in_cents integer attribute to Money
+        'paid_in_cents' => MoneyCast::class . ':paid_currency,cents',
+        'paid_currency' => 'string',
+    ];
+}
+```
 
 ## Contributing
 
@@ -30,8 +81,6 @@ Contributions are welcome! Please ensure:
 ## License
 
 MIT License © [Josef Traxler](https://github.com/joseftraxler)
-
-See the [LICENSE](LICENSE) file for details.
 
 ---
 
