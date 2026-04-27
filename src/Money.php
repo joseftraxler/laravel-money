@@ -35,8 +35,8 @@ class Money implements Contracts\Money, Castable, Htmlable
     ) {
         $this->currency = Currency::of($currency);
         $this->decimal = self::normalizeAmountInMajorUnit($decimal, $this->currency);
-        /** @phpstan-ignore-next-line assign.propertyType */
         $cents = ltrim(str_replace('.', '', $this->decimal), '0');
+        /** @phpstan-ignore-next-line assign.propertyType */
         $this->cents = $cents === '' ? '0' : $cents;
     }
 
