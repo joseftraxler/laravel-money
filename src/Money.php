@@ -23,7 +23,7 @@ class Money implements Contracts\Money, Castable, Htmlable
     private readonly Contracts\Currency $currency;
 
     /** @var numeric-string */
-    private string $cents;
+    private readonly string $cents;
 
     /**
      * @param numeric-string|float|int $decimal
@@ -36,7 +36,8 @@ class Money implements Contracts\Money, Castable, Htmlable
         $this->currency = Currency::of($currency);
         $this->decimal = self::normalizeAmountInMajorUnit($decimal, $this->currency);
         /** @phpstan-ignore-next-line assign.propertyType */
-        $this->cents = str_replace('.', '', $this->decimal);
+        $cents = ltrim(str_replace('.', '', $this->decimal), '0');
+        $this->cents = $cents === '' ? '0' : $cents;
     }
 
     public function getDecimal(): string
