@@ -5,35 +5,48 @@ declare(strict_types=1);
 namespace JosefTraxler\LaravelMoney;
 
 use Illuminate\Contracts\Database\Eloquent\Castable;
-use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Support\Facades\App;
-use JosefTraxler\LaravelMoney\Casts\AsMoney;
-use JosefTraxler\LaravelMoney\Contracts\Currency;
-use JosefTraxler\LaravelMoney\Contracts\MoneyFormatter;
 use JosefTraxler\LaravelMoney\Traits\MoneyCalculator;
+use JosefTraxler\LaravelMoney\Traits\MoneyCastable;
+use JosefTraxler\LaravelMoney\Traits\MoneyHtmlable;
+use JosefTraxler\LaravelMoney\Traits\MoneyNormalizer;
 
 class Money implements Contracts\Money, Castable, Htmlable
 {
     use MoneyCalculator;
+    use MoneyCastable;
+    use MoneyNormalizer;
+    use MoneyHtmlable;
 
     /** @var numeric-string */
-    private readonly string $amount;
-    private readonly Currency $currency;
+    private readonly string $decimal;
+    private readonly Contracts\Currency $currency;
 
+    /** @var numeric-string */
+    private string $cents;
+
+    /**
+     * @param numeric-string|float|int $decimal
+     * @param Contracts\Currency|non-empty-string $currency
+     */
     final public function __construct(
-        int|string $amount,
-        Currency|string $currency,
+        string|float|int $decimal,
+        Contracts\Currency|string  $currency,
     ) {
-        $this->currency = ($currency instanceof Currency)
-            ? $currency
-            : MoneyFactory::makeCurrency($currency);
-        $this->amount = (string) $amount;
+        $this->currency = Currency::of($currency);
+        $this->decimal = self::normalizeAmountInMajorUnit($decimal, $this->currency);
+        /** @phpstan-ignore-next-line assign.propertyType */
+        $this->cents = str_replace('.', '', $this->decimal);
     }
 
-    public function getAmount(): string
+    public function getDecimal(): string
     {
-        return $this->amount;
+        return $this->decimal;
+    }
+
+    public function getCents(): string
+    {
+        return $this->cents;
     }
 
     public function getCurrency(): Currency
@@ -43,39 +56,24 @@ class Money implements Contracts\Money, Castable, Htmlable
 
     /**
      * @param float|numeric-string $decimal
-     * @param non-empty-string|Currency $currency
+     * @param non-empty-string|Contracts\Currency $currency
      */
-    public static function fromDecimal(float|string $decimal, string|Currency $currency): Contracts\Money
+    public static function fromDecimal(float|string $decimal, string|Contracts\Currency $currency): Contracts\Money
     {
-        return MoneyFactory::makeMoneyFromDecimal($decimal, $currency);
+        return new static($decimal, $currency);
     }
 
     /**
-     * @param array{0?: non-empty-string, 1?: "decimal"|"cents"} $arguments
-     * @return CastsAttributes<Contracts\Money, Contracts\Money>
+     * @param int|numeric-string $cents
+     * @param non-empty-string|Contracts\Currency $currency
+     * @return Contracts\Money
      */
-    public static function castUsing(array $arguments): CastsAttributes
+    public static function fromCents(int|string $cents, string|Contracts\Currency $currency): Contracts\Money
     {
-        $currency = (string) (
-            $arguments[0]
-            ?? throw new \InvalidArgumentException('Money cast requires currency argument.')
+        $currency = Currency::of($currency);
+        return new static(
+            self::centsToDecimal($cents, $currency->getPrecision()),
+            $currency,
         );
-
-        $builder = match ($arguments[1] ?? 'decimal') {
-            'cents' => AsMoney::inCents(),
-            default => AsMoney::inDecimal(),
-        };
-
-        if (preg_match('@^[A-Z]{3}$@', $currency)) {
-            return $builder->withCurrency($currency);
-        }
-        return $builder->withCurrencyColumn($currency);
-    }
-
-    public function toHtml()
-    {
-        /** @var MoneyFormatter $formatter */
-        $formatter = App::make(MoneyFormatter::class);
-        return $formatter->humanReadable($this);
     }
 }

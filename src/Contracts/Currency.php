@@ -10,4 +10,8 @@ interface Currency extends \Stringable
     public function getCode(): string;
 
     public function equals(Currency $currency): bool;
+
+    /** @return non-negative-int */
+    public function getPrecision(): int;
+
 }

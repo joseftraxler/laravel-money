@@ -8,7 +8,6 @@ use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 use JosefTraxler\LaravelMoney\Contracts\Currency;
 use JosefTraxler\LaravelMoney\Contracts\Money;
-use JosefTraxler\LaravelMoney\MoneyFactory;
 
 class MoneyCastBuilder
 {
@@ -112,7 +111,7 @@ class MoneyCastBuilder
                 }
 
                 if (is_string($currency)) {
-                    $currency = MoneyFactory::makeCurrency($currency);
+                    $currency = \JosefTraxler\LaravelMoney\Currency::of($currency);
                 }
 
                 if (! $currency instanceof Currency) {

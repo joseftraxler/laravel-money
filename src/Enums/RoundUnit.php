@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace JosefTraxler\LaravelMoney\Enums;
 
 use JosefTraxler\LaravelMoney\Contracts\Currency;
-use JosefTraxler\LaravelMoney\MoneyFactory;
 
 enum RoundUnit
 {
@@ -29,7 +28,7 @@ enum RoundUnit
     case Trillion;
 
     /** @return positive-int */
-    public function toCentsUnit(string|Currency $currency): int
+    public function toCentsUnit(Currency $currency): int
     {
         /** @var positive-int */
         return match ($this) {
@@ -38,19 +37,19 @@ enum RoundUnit
             self::HundredCents => 2,
             self::ThousandCents => 3,
             self::TenThousandsCents => 4,
-            self::MajorUnit => 0 + MoneyFactory::currencyPrecision($currency),
-            self::Ten => 1 + MoneyFactory::currencyPrecision($currency),
-            self::Hundred => 2 + MoneyFactory::currencyPrecision($currency),
-            self::Thousand => 3 + MoneyFactory::currencyPrecision($currency),
-            self::TenThousands => 4 + MoneyFactory::currencyPrecision($currency),
-            self::HundredThousands => 5 + MoneyFactory::currencyPrecision($currency),
-            self::Million => 6 + MoneyFactory::currencyPrecision($currency),
-            self::TenMillion => 7 + MoneyFactory::currencyPrecision($currency),
-            self::HundredMillion => 8 + MoneyFactory::currencyPrecision($currency),
-            self::Billion => 9 + MoneyFactory::currencyPrecision($currency),
-            self::TenBillion => 10 + MoneyFactory::currencyPrecision($currency),
-            self::HundredBillion => 11 + MoneyFactory::currencyPrecision($currency),
-            self::Trillion => 12 + MoneyFactory::currencyPrecision($currency),
+            self::MajorUnit => 0 + $currency->getPrecision(),
+            self::Ten => 1 + $currency->getPrecision(),
+            self::Hundred => 2 + $currency->getPrecision(),
+            self::Thousand => 3 + $currency->getPrecision(),
+            self::TenThousands => 4 + $currency->getPrecision(),
+            self::HundredThousands => 5 + $currency->getPrecision(),
+            self::Million => 6 + $currency->getPrecision(),
+            self::TenMillion => 7 + $currency->getPrecision(),
+            self::HundredMillion => 8 + $currency->getPrecision(),
+            self::Billion => 9 + $currency->getPrecision(),
+            self::TenBillion => 10 + $currency->getPrecision(),
+            self::HundredBillion => 11 + $currency->getPrecision(),
+            self::Trillion => 12 + $currency->getPrecision(),
         };
     }
 

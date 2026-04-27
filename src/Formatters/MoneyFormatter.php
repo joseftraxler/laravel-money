@@ -7,14 +7,13 @@ namespace JosefTraxler\LaravelMoney\Formatters;
 use Illuminate\Support\Facades\App;
 use JosefTraxler\LaravelMoney\Contracts\Currency;
 use JosefTraxler\LaravelMoney\Contracts\Money;
-use JosefTraxler\LaravelMoney\MoneyFactory;
 
 class MoneyFormatter implements \JosefTraxler\LaravelMoney\Contracts\MoneyFormatter
 {
     public function humanReadableAmount(Money $money): string
     {
         return (string) self::currencyFormatter()->format(
-            (float) MoneyFactory::moneyToDecimal($money),
+            (float) $money->getDecimal(),
         );
     }
 
@@ -25,7 +24,7 @@ class MoneyFormatter implements \JosefTraxler\LaravelMoney\Contracts\MoneyFormat
 
         $money = $currencyOrMoney instanceof Money
             ? $currencyOrMoney
-            : MoneyFactory::makeMoney(0, $currencyOrMoney);
+            : new \JosefTraxler\LaravelMoney\Money(0, $currencyOrMoney);
 
         return $cache[$money->getCurrency()->getCode()] ??= trim(str_replace(
             self::humanReadableAmount($money),
@@ -37,7 +36,7 @@ class MoneyFormatter implements \JosefTraxler\LaravelMoney\Contracts\MoneyFormat
     public function humanReadable(Money $money): string
     {
         return (string) self::currencyFormatter()->formatCurrency(
-            (float) MoneyFactory::moneyToDecimal($money),
+            (float) $money->getDecimal(),
             $money->getCurrency()->getCode(),
         );
     }

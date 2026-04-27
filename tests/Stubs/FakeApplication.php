@@ -6,15 +6,15 @@ namespace Tests\Stubs;
 
 use ArrayAccess;
 use Illuminate\Contracts\Foundation\Application;
-use JosefTraxler\LaravelMoney\Contracts\Currency;
-use JosefTraxler\LaravelMoney\Contracts\MoneyFormatter;
-use JosefTraxler\LaravelMoney\Money;
 
 /**
  * @implements ArrayAccess<string,mixed>
  */
 final class FakeApplication implements Application, ArrayAccess
 {
+    /** @var array<string,mixed> */
+    private array $bindings = [];
+
     /** @var array<string,mixed> */
     private array $instances = [];
 
@@ -230,7 +230,7 @@ final class FakeApplication implements Application, ArrayAccess
 
     public function bind($abstract, $concrete = null, $shared = false)
     {
-        throw new \RuntimeException('Not implemented yet');
+        $this->bindings[$abstract] = $concrete;
     }
 
     /**
@@ -243,17 +243,21 @@ final class FakeApplication implements Application, ArrayAccess
 
     public function bindIf($abstract, $concrete = null, $shared = false)
     {
-        throw new \RuntimeException('Not implemented yet');
+        if (! isset($this->bindings[$abstract])) {
+            $this->bind($abstract, $concrete, $shared);
+        }
     }
 
     public function singleton($abstract, $concrete = null)
     {
-        throw new \RuntimeException('Not implemented yet');
+        $this->bindings[$abstract] = $concrete;
     }
 
     public function singletonIf($abstract, $concrete = null)
     {
-        throw new \RuntimeException('Not implemented yet');
+        if (! isset($this->bindings[$abstract])) {
+            $this->singleton($abstract, $concrete);
+        }
     }
 
     public function scoped($abstract, $concrete = null)
@@ -273,9 +277,6 @@ final class FakeApplication implements Application, ArrayAccess
 
     public function instance($abstract, $instance)
     {
-        if ($abstract instanceof \Closure) {
-            throw new \RuntimeException('Not implemented yet');
-        }
         return $this->instances[$abstract] = $instance;
     }
 
@@ -308,19 +309,22 @@ final class FakeApplication implements Application, ArrayAccess
      */
     public function make($abstract, array $parameters = [])
     {
-        if ($abstract === Currency::class) {
-            return \JosefTraxler\LaravelMoney\Currency::of($parameters['code']);
+        if (isset($this->instances[$abstract])) {
+            return $this->instances[$abstract];
         }
-        if ($abstract === MoneyFormatter::class) {
-            return new \JosefTraxler\LaravelMoney\Formatters\MoneyFormatter();
-        }
-        if ($abstract === \JosefTraxler\LaravelMoney\Contracts\Money::class) {
-            $cents = $parameters['amount'];
-            $currency = $parameters['currency'];
-            return new Money($cents, $currency instanceof Currency ? $currency : $this->make(Currency::class, ['code' => $currency]));
-        }
-        return $this->instances[$abstract]
+
+        $concrete = $this->bindings[$abstract]
             ?? throw new \RuntimeException("Failed to resolve {$abstract}");
+
+        if ($concrete instanceof \Closure) {
+            return $concrete($this, $parameters);
+        }
+
+        if (is_string($concrete)) {
+            return $this->make($concrete, $parameters);
+        }
+
+        throw new \RuntimeException("Failed to resolve {$abstract}");
     }
 
     /**
@@ -353,7 +357,7 @@ final class FakeApplication implements Application, ArrayAccess
 
     public function has(string $id): bool
     {
-        return isset($this->instances[$id]);
+        return isset($this->bindings[$id]);
     }
 
     public function offsetExists(mixed $offset): bool
@@ -376,6 +380,6 @@ final class FakeApplication implements Application, ArrayAccess
 
     public function offsetUnset(mixed $offset): void
     {
-        unset($this->instances[$offset]);
+        unset($this->bindings[$offset]);
     }
 }

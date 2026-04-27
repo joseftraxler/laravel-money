@@ -7,9 +7,9 @@ use JosefTraxler\LaravelMoney\Money;
 
 $eur = Currency::of('EUR');
 
-$eur1 = new Money(100, $eur);
-$Eur1b = new Money(100, $eur);
-$eur2 = new Money(200, $eur);
+$eur1 = new Money(1, $eur);
+$Eur1b = new Money(1, $eur);
+$eur2 = new Money(2, $eur);
 
 it('returns true when comparing equal money amounts with equals()')
     ->assertTrue($eur1->equals($Eur1b));

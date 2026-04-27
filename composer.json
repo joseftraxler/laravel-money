@@ -54,7 +54,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "JosefTraxler\\LaravelMoney\\Providers\\LaravelMoneyProvider"
+                "JosefTraxler\\LaravelMoney\\Providers\\LaravelMoneyServiceProvider"
             ]
         }
     },

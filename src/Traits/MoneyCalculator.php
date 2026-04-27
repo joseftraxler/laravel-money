@@ -15,7 +15,7 @@ trait MoneyCalculator
 {
     public function add(Money ...$money): Money
     {
-        return new static(
+        return static::fromCents(
             self::toMoneyPhp($this)->add(...array_map(self::toMoneyPhp(...), $money))->getAmount(),
             $this->getCurrency(),
         );
@@ -23,7 +23,7 @@ trait MoneyCalculator
 
     public function subtract(Money ...$money): Money
     {
-        return new static(
+        return static::fromCents(
             self::toMoneyPhp($this)->subtract(...array_map(self::toMoneyPhp(...), $money))->getAmount(),
             $this->getCurrency(),
         );
@@ -34,7 +34,7 @@ trait MoneyCalculator
      */
     public function multiply(int|string $multiplier): Money
     {
-        return new static(
+        return static::fromCents(
             self::toMoneyPhp($this)->multiply($multiplier)->getAmount(),
             $this->getCurrency(),
         );
@@ -48,7 +48,7 @@ trait MoneyCalculator
         if ((float) $divisor === 0.0) {
             throw new \InvalidArgumentException('Division by zero is not allowed');
         }
-        return new static(
+        return static::fromCents(
             self::toMoneyPhp($this)->divide($divisor)->getAmount(),
             $this->getCurrency(),
         );
@@ -56,17 +56,17 @@ trait MoneyCalculator
 
     public function isNegative(): bool
     {
-        return self::toMoneyPhp($this)->isNegative();
+        return $this->getDecimal()[0] === '-';
     }
 
     public function isPositive(): bool
     {
-        return self::toMoneyPhp($this)->isPositive();
+        return ! $this->isNegative() && ! $this->isZero();
     }
 
     public function isZero(): bool
     {
-        return self::toMoneyPhp($this)->isZero();
+        return (float) $this->getDecimal() === 0.0;
     }
 
     public function equals(Money $money): bool
@@ -101,8 +101,11 @@ trait MoneyCalculator
 
     public function round(RoundMode $mode = RoundMode::HalfUp, RoundUnit $unit = RoundUnit::MajorUnit): Money
     {
-        return new static(
-            self::toMoneyPhp($this)->roundToUnit($unit->toCentsUnit($this->getCurrency()), $mode->value)->getAmount(),
+        return static::fromCents(
+            self::toMoneyPhp($this)->roundToUnit(
+                $unit->toCentsUnit($this->getCurrency()),
+                $mode->value,
+            )->getAmount(),
             $this->getCurrency(),
         );
     }
@@ -110,7 +113,7 @@ trait MoneyCalculator
     private static function toMoneyPhp(Money $money): \Money\Money
     {
         return new \Money\Money(
-            $money->getAmount(),
+            $money->getCents(),
             new \Money\Currency($money->getCurrency()->getCode()),
         );
     }

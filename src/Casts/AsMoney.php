@@ -6,47 +6,46 @@ namespace JosefTraxler\LaravelMoney\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use JosefTraxler\LaravelMoney\Builders\MoneyCastBuilder;
-use JosefTraxler\LaravelMoney\Contracts\Currency;
-use JosefTraxler\LaravelMoney\Contracts\Money;
-use JosefTraxler\LaravelMoney\MoneyFactory;
+use JosefTraxler\LaravelMoney\Contracts;
+use JosefTraxler\LaravelMoney\Money;
 
 final class AsMoney
 {
     /**
-     * @param null|non-empty-string|Currency $currency
+     * @param null|non-empty-string|Contracts\Currency $currency
      *
-     * @return ($currency is null ? MoneyCastBuilder : CastsAttributes<Money,Money>)
+     * @return ($currency is null ? MoneyCastBuilder : CastsAttributes<Contracts\Money,Contracts\Money>)
      */
     public static function inDecimal(
-        null|string|Currency $currency = null,
+        null|string|Contracts\Currency $currency = null,
     ): MoneyCastBuilder|CastsAttributes {
         $builder = new MoneyCastBuilder(
-            getMoney: function ($value, Currency $currency): Money {
+            getMoney: function ($value, Contracts\Currency $currency): Contracts\Money {
                 /** @var numeric-string $value */
-                return MoneyFactory::makeMoneyFromDecimal($value, $currency);
+                return Money::fromDecimal($value, $currency);
             },
-            setMoney: function (Money $money) {
-                return MoneyFactory::moneyToDecimal($money);
+            setMoney: function (Contracts\Money $money) {
+                return $money->getDecimal();
             },
         );
         return is_null($currency) ? $builder : $builder->withCurrency($currency);
     }
 
     /**
-     * @param null|non-empty-string|Currency $currency
+     * @param null|non-empty-string|Contracts\Currency $currency
      *
-     * @return ($currency is null ? MoneyCastBuilder : CastsAttributes<Money,Money>)
+     * @return ($currency is null ? MoneyCastBuilder : CastsAttributes<Contracts\Money,Contracts\Money>)
      */
     public static function inCents(
-        null|string|Currency $currency = null,
+        null|string|Contracts\Currency $currency = null,
     ): MoneyCastBuilder|CastsAttributes {
         $builder = new MoneyCastBuilder(
-            getMoney: function ($value, Currency $currency): Money {
+            getMoney: function ($value, Contracts\Currency $currency): Contracts\Money {
                 /** @var numeric-string $value */
-                return MoneyFactory::makeMoney($value, $currency);
+                return Money::fromCents($value, $currency);
             },
-            setMoney: function (Money $money) {
-                return $money->getAmount();
+            setMoney: function (Contracts\Money $money) {
+                return $money->getDecimal();
             },
         );
         return is_null($currency) ? $builder : $builder->withCurrency($currency);

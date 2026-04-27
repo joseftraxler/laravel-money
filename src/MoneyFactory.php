@@ -5,76 +5,18 @@ declare(strict_types=1);
 namespace JosefTraxler\LaravelMoney;
 
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Config;
 
 final class MoneyFactory
 {
     /**
-     * @param int|numeric-string $amountInCents
-     * @param non-empty-string|Contracts\Currency $code
-     */
-    public static function makeMoney(int|string $amountInCents, string|Contracts\Currency $code): Contracts\Money
-    {
-        /** @var Contracts\Money */
-        return App::make(Contracts\Money::class, [
-            'amount' => $amountInCents,
-            'currency' => $code instanceof Contracts\Currency ? $code : self::makeCurrency($code),
-        ]);
-    }
-
-    /**
-     * @param numeric-string|float $decimal
-     * @param non-empty-string|Contracts\Currency $code
-     */
-    public static function makeMoneyFromDecimal(string|float $decimal, string|Contracts\Currency $code): Contracts\Money
-    {
-        return self::makeMoney(
-            self::decimalToCents($decimal, $code),
-            $code,
-        );
-    }
-
-    /**
      * @param non-empty-string $code
      */
-    public static function makeCurrency(string $code): Contracts\Currency
+    public static function makeCurrency(string|Contracts\Currency $code): Contracts\Currency
     {
+        if ($code instanceof Contracts\Currency) {
+            return $code;
+        }
         /** @var Contracts\Currency */
         return App::make(Contracts\Currency::class, ['code' => $code]);
-    }
-
-    /**
-     * @param numeric-string|float $decimal
-     * @return numeric-string
-     */
-    public static function decimalToCents(string|float $decimal, string|Contracts\Currency $code): string
-    {
-        $precision = self::currencyPrecision($code);
-
-        $multiplier = 10 ** $precision;
-
-        return sprintf('%d', round((float) $decimal * $multiplier));
-    }
-
-    /**
-     * @return numeric-string
-     */
-    public static function moneyToDecimal(Contracts\Money $money): string
-    {
-        $precision = self::currencyPrecision($money->getCurrency());
-
-        $multiplier = 10 ** $precision;
-
-        /** @var numeric-string */
-        return sprintf('%0.' . $precision . 'f', $money->getAmount() / $multiplier);
-    }
-
-    public static function currencyPrecision(Contracts\Currency|string $currency): int
-    {
-        if ($currency instanceof Contracts\Currency) {
-            $currency = $currency->getCode();
-        }
-        /** @var int */
-        return Config::get('money.precisions.' . $currency, 2);
     }
 }

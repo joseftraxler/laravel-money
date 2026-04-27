@@ -11,7 +11,7 @@ it('casts money:EUR to model attribute', function () {
     ]);
 
     expect($model->price_eur)->toBeInstanceOf(Money::class);
-    expect($model->price_eur->getAmount())->toBe('100');
+    expect($model->price_eur->getDecimal())->toBe('1.00');
     expect($model->price_eur->getCurrency())->toBe(Currency::of('EUR'));
 });
 
@@ -22,7 +22,7 @@ it('casts money:currency to model attribute', function () {
     ]);
 
     expect($model->paid)->toBeInstanceOf(Money::class);
-    expect($model->paid->getAmount())->toBe('100');
+    expect($model->paid->getDecimal())->toBe('1.00');
     expect($model->paid->getCurrency())->toBe(Currency::of('USD'));
 });
 
@@ -31,9 +31,9 @@ it('sets money attribute', function () {
         'price_eur' => '1.00',
     ]);
 
-    $model->price_eur = new Money(200, Currency::of('EUR'));
+    $model->price_eur = new Money(2, Currency::of('EUR'));
 
-    expect($model->price_eur->getAmount())->toBe('200');
+    expect($model->price_eur->getDecimal())->toBe('2.00');
 });
 
 it('sets currency attribute when change money', function () {
@@ -42,7 +42,7 @@ it('sets currency attribute when change money', function () {
         'paid_currency' => 'USD',
     ]);
 
-    $model->paid = new Money(200, Currency::of('EUR'));
+    $model->paid = new Money(2, Currency::of('EUR'));
 
     expect($model->paid->getCurrency()->getCode())->toBe('EUR');
 });
@@ -71,7 +71,7 @@ it('casts money in cents with fixed currency', function () {
     ]);
 
     expect($model->paid_in_cents)->toBeInstanceOf(Money::class);
-    expect($model->paid_in_cents->getAmount())->toBe('150');
+    expect($model->paid_in_cents->getDecimal())->toBe('1.50');
     expect($model->paid_in_cents->getCurrency())->toBe(Currency::of('USD'));
 });
 
@@ -81,9 +81,9 @@ it('sets money in cents attribute', function () {
         'paid_currency' => 'USD',
     ]);
 
-    $model->paid_in_cents = new Money(250, Currency::of('EUR'));
+    $model->paid_in_cents = Money::fromCents('250', Currency::of('EUR'));
 
-    expect($model->paid_in_cents->getAmount())->toBe('250');
+    expect($model->paid_in_cents->getCents())->toBe('250');
 });
 
 it('sets null money attribute', function () {
@@ -101,7 +101,7 @@ it('stores decimal value in database attribute', function () {
         'price_eur' => '1.00',
     ]);
 
-    $model->price_eur = new Money(12345, Currency::of('EUR'));
+    $model->price_eur = new Money('123.45', Currency::of('EUR'));
 
     expect($model->getRawAttribute('price_eur'))->toBe('123.45');
 });
@@ -112,7 +112,7 @@ it('stores currency code in separate column', function () {
         'paid_currency' => 'USD',
     ]);
 
-    $model->paid = new Money(300, Currency::of('GBP'));
+    $model->paid = new Money(3, Currency::of('GBP'));
 
     expect($model->getAttribute('paid_currency'))->toBe('GBP');
 });
