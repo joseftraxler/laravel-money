@@ -49,7 +49,7 @@ class Money implements Contracts\Money, Castable, Htmlable
         return $this->cents;
     }
 
-    public function getCurrency(): Currency
+    public function getCurrency(): Contracts\Currency
     {
         return $this->currency;
     }
