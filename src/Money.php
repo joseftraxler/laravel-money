@@ -8,6 +8,7 @@ use Illuminate\Contracts\Database\Eloquent\Castable;
 use Illuminate\Contracts\Support\Htmlable;
 use JosefTraxler\LaravelMoney\Traits\MoneyCalculator;
 use JosefTraxler\LaravelMoney\Traits\MoneyCastable;
+use JosefTraxler\LaravelMoney\Traits\MoneyFactory;
 use JosefTraxler\LaravelMoney\Traits\MoneyHtmlable;
 use JosefTraxler\LaravelMoney\Traits\MoneyNormalizer;
 
@@ -15,8 +16,9 @@ class Money implements Contracts\Money, Castable, Htmlable
 {
     use MoneyCalculator;
     use MoneyCastable;
-    use MoneyNormalizer;
+    use MoneyFactory;
     use MoneyHtmlable;
+    use MoneyNormalizer;
 
     /** @var numeric-string */
     private readonly string $decimal;
@@ -53,28 +55,5 @@ class Money implements Contracts\Money, Castable, Htmlable
     public function getCurrency(): Contracts\Currency
     {
         return $this->currency;
-    }
-
-    /**
-     * @param float|numeric-string $decimal
-     * @param non-empty-string|Contracts\Currency $currency
-     */
-    public static function fromDecimal(float|string $decimal, string|Contracts\Currency $currency): Contracts\Money
-    {
-        return new static($decimal, $currency);
-    }
-
-    /**
-     * @param int|numeric-string $cents
-     * @param non-empty-string|Contracts\Currency $currency
-     * @return Contracts\Money
-     */
-    public static function fromCents(int|string $cents, string|Contracts\Currency $currency): Contracts\Money
-    {
-        $currency = Currency::of($currency);
-        return new static(
-            self::centsToDecimal($cents, $currency->getPrecision()),
-            $currency,
-        );
     }
 }
