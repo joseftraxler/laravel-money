@@ -18,6 +18,8 @@ final class FakeApplication implements Application, ArrayAccess
     /** @var array<string,mixed> */
     private array $instances = [];
 
+    private string $locale = 'en_US';
+
     public function __construct()
     {
         $this->instances['app'] = $this;
@@ -150,7 +152,7 @@ final class FakeApplication implements Application, ArrayAccess
 
     public function getLocale()
     {
-        return 'en';
+        return $this->locale;
     }
 
     public function getNamespace()
@@ -178,7 +180,7 @@ final class FakeApplication implements Application, ArrayAccess
 
     public function setLocale($locale)
     {
-        // Unnecessary for tests
+        $this->locale = $locale;
     }
 
     public function shouldSkipMiddleware()
