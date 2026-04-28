@@ -52,10 +52,11 @@ trait MoneyNormalizer
 
         $parts = explode('.', ltrim($amount, '+'));
 
-        if ($precision === 0 || count($parts) === 1) {
+        if ($precision === 0) {
             /** @var numeric-string */
             return $parts[0];
         }
+        $parts[1] ??= '0';
 
         $parts[1] = match (true) {
             strlen($parts[1]) === $precision => $parts[1],
