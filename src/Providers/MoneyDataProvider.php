@@ -31,7 +31,7 @@ class MoneyDataProvider implements \JosefTraxler\LaravelMoney\Contracts\MoneyDat
         $result = filter_var(
             $this->config->get(
                 'money.currencies.' . $currencyCode,
-                $this->getDefaultPrecision(),
+                $this->getDefaultPrecision($currencyCode),
             ),
             FILTER_VALIDATE_INT,
             FILTER_NULL_ON_FAILURE,
@@ -42,17 +42,33 @@ class MoneyDataProvider implements \JosefTraxler\LaravelMoney\Contracts\MoneyDat
         return $result;
     }
 
-    public function getDefaultPrecision(): int
+    public function getDefaultPrecision(string $currencyCode): int
     {
         $result = filter_var(
-            $this->config->get('money.default_precision', 2),
+            $this->config->get(
+                'money.default_precision',
+                $this->detectDefaultPrecision($currencyCode),
+            ),
             FILTER_VALIDATE_INT,
             FILTER_NULL_ON_FAILURE,
         ) ?? throw new \UnexpectedValueException("Invalid default precision, value must be an integer.");
+
         if ($result < 0) {
             throw new \UnexpectedValueException("Invalid default precision, value must be greater than or equal to 0.");
         }
+
         return $result;
+    }
+
+    private function detectDefaultPrecision(string $currencyCode): int
+    {
+        return match ($currencyCode) {
+            // Zero decimal currencies
+            'BIF', 'CLP', 'DJF', 'GNF', 'JPY', 'KMF', 'KRW', 'MGA', 'PYG', 'RWF', 'UGX', 'VND', 'VUV', 'XAF', 'XOF', 'XPF' => 0,
+            // Three decimal currencies
+            'BHD', 'IQD', 'JOD', 'KWD', 'LYD', 'OMR', 'TND' => 3,
+            default => 2,
+        };
     }
 
     public function getCurrencyClassName(): string

@@ -7,17 +7,24 @@ namespace JosefTraxler\LaravelMoney\Formatters;
 use Illuminate\Support\Facades\App;
 use JosefTraxler\LaravelMoney\Contracts\Currency;
 use JosefTraxler\LaravelMoney\Contracts\Money;
+use NumberFormatter;
 
 class MoneyFormatter implements \JosefTraxler\LaravelMoney\Contracts\MoneyFormatter
 {
-    public function humanReadableAmount(Money $money): string
+    public function humanReadableAmount(Money $money, ?string $locale = null): string
     {
-        return (string) self::currencyFormatter()->format(
+        return self::decimalFormatter(
+            $locale,
+            fn (\NumberFormatter $formatter) => $formatter->setAttribute(
+                \NumberFormatter::FRACTION_DIGITS,
+                $money->getCurrency()->getPrecision(),
+            ),
+        )->format(
             (float) $money->getDecimal(),
-        );
+        ) ?: $money->getDecimal();
     }
 
-    public function humanReadableCurrency(Currency|Money $currencyOrMoney): string
+    public function humanReadableCurrency(Currency|Money $currencyOrMoney, ?string $locale = null): string
     {
         /** @var array<string, string> $cache */
         static $cache = [];
@@ -26,26 +33,50 @@ class MoneyFormatter implements \JosefTraxler\LaravelMoney\Contracts\MoneyFormat
             ? $currencyOrMoney
             : new \JosefTraxler\LaravelMoney\Money(0, $currencyOrMoney);
 
-        return $cache[$money->getCurrency()->getCode()] ??= trim(str_replace(
-            self::humanReadableAmount($money),
-            '',
-            self::humanReadable($money),
-        ));
+        return $cache[$locale . '-' . $money->getCurrency()->getCode()] ??= self::currencyFormatter(
+            $locale,
+            fn (\NumberFormatter $formatter) => $formatter->setTextAttribute(
+                \NumberFormatter::CURRENCY_CODE,
+                $money->getCurrency()->getCode(),
+            )
+        )->getSymbol(NumberFormatter::CURRENCY_SYMBOL) ?: $money->getCurrency()->getCode();
     }
 
-    public function humanReadable(Money $money): string
+    public function humanReadable(Money $money, ?string $locale = null): string
     {
-        return (string) self::currencyFormatter()->formatCurrency(
+        return (string) self::currencyFormatter(
+            $locale,
+            fn (\NumberFormatter $formatter) => $formatter->setAttribute(
+                \NumberFormatter::FRACTION_DIGITS,
+                $money->getCurrency()->getPrecision(),
+            ),
+        )->formatCurrency(
             (float) $money->getDecimal(),
             $money->getCurrency()->getCode(),
-        );
+        ) ?: $money->getCurrency()->getCode() . "\u{00A0}" . $money->getDecimal();
     }
 
-    protected static function currencyFormatter(): \NumberFormatter
+    protected static function currencyFormatter(?string $locale = null, ?\Closure $initFormatter = null): \NumberFormatter
     {
-        /** @var ?\NumberFormatter $formatter */
-        static $formatter;
+        /** @var array<\NumberFormatter> $formatters */
+        static $formatters = [];
+        $locale ??= App::getLocale();
+        $formatter = $formatters[$locale] ??= new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
+        if ($initFormatter) {
+            $initFormatter($formatter);
+        }
+        return $formatter;
+    }
 
-        return $formatter ??= new \NumberFormatter(App::getLocale(), \NumberFormatter::CURRENCY);
+    protected static function decimalFormatter(?string $locale = null, ?\Closure $initFormatter = null): \NumberFormatter
+    {
+        /** @var array<\NumberFormatter> $formatters */
+        static $formatters = [];
+        $locale ??= App::getLocale();
+        $formatter = $formatters[$locale] ??= new \NumberFormatter($locale, \NumberFormatter::DECIMAL);
+        if ($initFormatter) {
+            $initFormatter($formatter);
+        }
+        return $formatter;
     }
 }

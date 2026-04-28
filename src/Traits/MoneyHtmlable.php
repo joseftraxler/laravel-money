@@ -14,6 +14,21 @@ trait MoneyHtmlable
 {
     public function toHtml()
     {
-        return MoneyFormatter::humanReadable($this);
+        return $this->toHumanReadable();
+    }
+
+    public function toHumanReadable(?string $locale = null): string
+    {
+        return MoneyFormatter::humanReadable($this, $locale);
+    }
+
+    public function toHumanReadableCurrency(?string $locale = null): string
+    {
+        return MoneyFormatter::humanReadableCurrency($this, $locale);
+    }
+
+    public function toHumanReadableAmount(?string $locale = null): string
+    {
+        return MoneyFormatter::humanReadableAmount($this, $locale);
     }
 }
