@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JosefTraxler\LaravelMoney\Traits;
 
 use JosefTraxler\LaravelMoney\Contracts;
