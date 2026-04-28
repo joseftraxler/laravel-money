@@ -96,7 +96,7 @@ trait MoneyFactory
     public static function __callStatic(string $name, array $arguments)
     {
         if (strtoupper($name) === $name && strlen($name) === 3) {
-            if (count($arguments) > 1) {
+            if (count($arguments) > 0) {
                 /** @var array{0: int|float|numeric-string} $arguments */
                 return static::fromCurrencyCode($name, $arguments[0]);
             }
