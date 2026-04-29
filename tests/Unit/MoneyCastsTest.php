@@ -77,7 +77,7 @@ it('casts money in cents with fixed currency')
     ->getCurrency()->toBe(Currency::of(CurrencyEnum::USD))
 ;
 
-it('sets money in cents attribute', function () {
+it('stores cents value in database attribute', function () {
     $model = new ModelExample([
         'paid_in_cents' => 100,
         'paid_in_cents_currency' => 'USD',
@@ -85,7 +85,8 @@ it('sets money in cents attribute', function () {
 
     $model->paid_in_cents = Money::fromCents('250', Currency::of('EUR'));
 
-    expect($model->paid_in_cents->getCents())->toBe('250');
+    expect($model->getRawAttribute('paid_in_cents'))->toBe('250');
+    expect($model->getAttribute('paid_in_cents_currency'))->toBe(CurrencyEnum::EUR);
 });
 
 it('sets null money attribute', function () {
@@ -126,4 +127,86 @@ it('returns null when currency column is null', function () {
     ]);
 
     expect($model->paid)->toBeNull();
+});
+
+it('stores cents cast as cents, not decimal', function () {
+    $model = new ModelExample([
+        'paid_in_cents' => 100,
+        'paid_in_cents_currency' => 'USD',
+    ]);
+
+    $model->paid_in_cents = Money::fromCents('299', Currency::of('EUR'));
+
+    expect($model->getRawAttribute('paid_in_cents'))->toBe('299');
+    expect($model->paid_in_cents->getCents())->toBe('299');
+    expect($model->paid_in_cents->getDecimal())->toBe('2.99');
+});
+
+it('rejects invalid currency codes', function () {
+    (new ModelExample([
+        'price_eur' => '10.00',
+        'paid' => '5.00',
+        'paid_currency' => 'INVALID',
+    ]))->paid;
+})->throws(\InvalidArgumentException::class, 'Currency code must be a valid ISO 4217 code.');
+
+it('formats different currency precisions without leaking formatter state', function () {
+    $modelJpy = new ModelExample([
+        'paid' => '1000',
+        'paid_currency' => CurrencyEnum::JPY->value,
+    ]);
+
+    $modelEur = new ModelExample([
+        'price_eur' => '10.50',
+    ]);
+
+    expect($modelJpy->paid->getCurrency()->getPrecision())->toBe(0);
+    expect($modelJpy->paid->getDecimal())->toBe('1000');
+
+    expect($modelEur->price_eur->getCurrency()->getPrecision())->toBe(2);
+    expect($modelEur->price_eur->getDecimal())->toBe('10.50');
+
+    // Verify JPY still has correct precision after EUR
+    expect($modelJpy->paid->getCurrency()->getPrecision())->toBe(0);
+});
+
+it('uses resolved app locale in currency symbol cache key', function () {
+    $model1 = new ModelExample([
+        'price_eur' => '10.00',
+    ]);
+
+    $model2 = new ModelExample([
+        'paid' => '20.00',
+        'paid_currency' => 'EUR',
+    ]);
+
+    expect($model1->price_eur->getCurrency())->toBe($model2->paid->getCurrency());
+    expect($model1->price_eur->getCurrency()->getCode())->toBe('EUR');
+});
+
+it('accepts integer decimal values through fromDecimal', function () {
+    $model = new ModelExample([
+        'price_eur' => '1.00',
+    ]);
+
+    $model->price_eur = Money::fromDecimal(50, Currency::of('EUR'));
+
+    expect($model->price_eur->getDecimal())->toBe('50.00');
+    expect($model->price_eur->getCents())->toBe('5000');
+});
+
+it('detects zero without float conversion', function () {
+    $model1 = new ModelExample([
+        'price_eur' => '0.00',
+    ]);
+
+    $model2 = new ModelExample([
+        'price_eur' => 0,
+    ]);
+
+    expect($model1->price_eur->isZero())->toBeTrue();
+    expect($model1->price_eur->getCents())->toBe('0');
+
+    expect($model2->price_eur->isZero())->toBeTrue();
+    expect($model2->price_eur->getCents())->toBe('0');
 });
