@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace JosefTraxler\LaravelMoney\Providers;
 
 use Illuminate\Contracts\Config\Repository;
-use JosefTraxler\LaravelMoney\Contracts\Currencyable;
+use JosefTraxler\LaravelMoney\Contracts\Currency;
 use JosefTraxler\LaravelMoney\Contracts\MoneyDataProvider as MoneyDataProviderInterface;
 
 class MoneyDataProvider implements MoneyDataProviderInterface
@@ -18,7 +18,7 @@ class MoneyDataProvider implements MoneyDataProviderInterface
     ) {
     }
 
-    public function defaultCurrency(): ?Currencyable
+    public function defaultCurrency(): ?Currency
     {
         $defaultCode = $this->config->get('money.default_currency');
         if (is_null($defaultCode) || $defaultCode === '') {
@@ -30,29 +30,29 @@ class MoneyDataProvider implements MoneyDataProviderInterface
         return \JosefTraxler\LaravelMoney\Currency::of($defaultCode);
     }
 
-    public function precision(string $currencyCode): int
+    public function precision(Currency $currencyCode): int
     {
-        return $this->precisionCache[$currencyCode] ??= $this->resolvePrecision($currencyCode);
+        return $this->precisionCache[$currencyCode->getCode()] ??= $this->resolvePrecision($currencyCode);
     }
 
     /** @return non-negative-int */
-    private function resolvePrecision(string $currencyCode): int
+    private function resolvePrecision(Currency $currencyCode): int
     {
         $result = filter_var(
-            $this->config->get('money.currencies.' . $currencyCode . '.precision')
+            $this->config->get('money.currencies.' . $currencyCode->getCode() . '.precision')
                 ?? $this->getDefaultPrecision($currencyCode),
             FILTER_VALIDATE_INT,
             FILTER_NULL_ON_FAILURE,
-        ) ?? throw new \UnexpectedValueException("Invalid precision for currency {$currencyCode}, value must be an integer.");
+        ) ?? throw new \UnexpectedValueException("Invalid precision for currency {$currencyCode->getCode()}, value must be an integer.");
 
         if ($result < 0) {
-            throw new \UnexpectedValueException("Invalid precision for currency {$currencyCode}, value must be greater than or equal to 0.");
+            throw new \UnexpectedValueException("Invalid precision for currency {$currencyCode->getCode()}, value must be greater than or equal to 0.");
         }
 
         return $result;
     }
 
-    public function getDefaultPrecision(string $currencyCode): int
+    public function getDefaultPrecision(Currency $currencyCode): int
     {
         $result = filter_var(
             $this->config->get(
@@ -70,9 +70,9 @@ class MoneyDataProvider implements MoneyDataProviderInterface
         return $result;
     }
 
-    private function detectDefaultPrecision(string $currencyCode): int
+    private function detectDefaultPrecision(Currency $currencyCode): int
     {
-        return match ($currencyCode) {
+        return match ($currencyCode->getCode()) {
             // Zero decimal currencies
             'BIF', 'CLP', 'DJF', 'GNF', 'JPY', 'KMF', 'KRW', 'MGA', 'PYG', 'RWF', 'UGX', 'VND', 'VUV', 'XAF', 'XOF', 'XPF' => 0,
             // Three decimal currencies

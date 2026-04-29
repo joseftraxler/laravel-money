@@ -6,12 +6,10 @@ namespace JosefTraxler\LaravelMoney\Contracts;
 
 interface MoneyDataProvider
 {
-    public function defaultCurrency(): ?Currencyable;
+    public function defaultCurrency(): ?Currency;
 
     /**
-     * @param non-empty-string $currencyCode
-     *
      * @return non-negative-int
      */
-    public function precision(string $currencyCode): int;
+    public function precision(Currency $currencyCode): int;
 }

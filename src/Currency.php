@@ -56,6 +56,6 @@ class Currency implements Contracts\Currency
 
     public function getPrecision(): int
     {
-        return MoneyDataProvider::precision($this->code);
+        return MoneyDataProvider::precision($this);
     }
 }
