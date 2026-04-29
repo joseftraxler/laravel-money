@@ -45,7 +45,7 @@ final class AsMoney
                 return Money::fromCents($value, $currency);
             },
             setMoney: function (Contracts\Money $money) {
-                return $money->getDecimal();
+                return $money->getCents();
             },
         );
         return is_null($currency) ? $builder : $builder->withCurrency($currency);
