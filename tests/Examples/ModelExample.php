@@ -21,8 +21,9 @@ class ModelExample extends Model
         return [
             'price_eur' => Money::class . ':EUR',
             'paid' => Money::class . ':paid_currency',
-            'paid_in_cents' => Money::class . ':paid_currency,cents',
             'paid_currency' => 'string',
+            'paid_in_cents' => Money::class . ':paid_in_cents_currency,cents',
+            'paid_in_cents_currency' => CurrencyEnum::class,
         ];
     }
 

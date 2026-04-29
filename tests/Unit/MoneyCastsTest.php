@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 use JosefTraxler\LaravelMoney\Currency;
 use JosefTraxler\LaravelMoney\Money;
+use Tests\Examples\CurrencyEnum;
+use Tests\Examples\ModelExample;
 
 it('casts money:EUR to model attribute', function () {
-    $model = new \Tests\Examples\ModelExample([
+    $model = new ModelExample([
         'price_eur' => '1.00',
     ]);
 
@@ -16,7 +18,7 @@ it('casts money:EUR to model attribute', function () {
 });
 
 it('casts money:currency to model attribute', function () {
-    $model = new \Tests\Examples\ModelExample([
+    $model = new ModelExample([
         'paid' => '1.00',
         'paid_currency' => 'USD',
     ]);
@@ -27,7 +29,7 @@ it('casts money:currency to model attribute', function () {
 });
 
 it('sets money attribute', function () {
-    $model = new \Tests\Examples\ModelExample([
+    $model = new ModelExample([
         'price_eur' => '1.00',
     ]);
 
@@ -37,7 +39,7 @@ it('sets money attribute', function () {
 });
 
 it('sets currency attribute when change money', function () {
-    $model = new \Tests\Examples\ModelExample([
+    $model = new ModelExample([
         'paid' => '1.00',
         'paid_currency' => 'USD',
     ]);
@@ -48,7 +50,7 @@ it('sets currency attribute when change money', function () {
 });
 
 it('casts null money with fixed currency', function () {
-    $model = new \Tests\Examples\ModelExample([
+    $model = new ModelExample([
         'price_eur' => null,
     ]);
 
@@ -56,7 +58,7 @@ it('casts null money with fixed currency', function () {
 });
 
 it('casts null money with dynamic currency', function () {
-    $model = new \Tests\Examples\ModelExample([
+    $model = new ModelExample([
         'paid' => null,
         'paid_currency' => 'USD',
     ]);
@@ -64,21 +66,21 @@ it('casts null money with dynamic currency', function () {
     expect($model->paid)->toBeNull();
 });
 
-it('casts money in cents with fixed currency', function () {
-    $model = new \Tests\Examples\ModelExample([
+it('casts money in cents with fixed currency')
+    ->expect((new ModelExample([
         'paid_in_cents' => 150,
-        'paid_currency' => 'USD',
-    ]);
-
-    expect($model->paid_in_cents)->toBeInstanceOf(Money::class);
-    expect($model->paid_in_cents->getDecimal())->toBe('1.50');
-    expect($model->paid_in_cents->getCurrency())->toBe(Currency::of('USD'));
-});
+        'paid_in_cents_currency' => CurrencyEnum::USD,
+    ]))->paid_in_cents)
+    ->toBeInstanceOf(Money::class)
+    ->getDecimal()->toBe('1.50')
+    ->getCents()->toBe('150')
+    ->getCurrency()->toBe(Currency::of(CurrencyEnum::USD))
+;
 
 it('sets money in cents attribute', function () {
-    $model = new \Tests\Examples\ModelExample([
+    $model = new ModelExample([
         'paid_in_cents' => 100,
-        'paid_currency' => 'USD',
+        'paid_in_cents_currency' => 'USD',
     ]);
 
     $model->paid_in_cents = Money::fromCents('250', Currency::of('EUR'));
@@ -87,7 +89,7 @@ it('sets money in cents attribute', function () {
 });
 
 it('sets null money attribute', function () {
-    $model = new \Tests\Examples\ModelExample([
+    $model = new ModelExample([
         'price_eur' => '1.00',
     ]);
 
@@ -97,7 +99,7 @@ it('sets null money attribute', function () {
 });
 
 it('stores decimal value in database attribute', function () {
-    $model = new \Tests\Examples\ModelExample([
+    $model = new ModelExample([
         'price_eur' => '1.00',
     ]);
 
@@ -107,7 +109,7 @@ it('stores decimal value in database attribute', function () {
 });
 
 it('stores currency code in separate column', function () {
-    $model = new \Tests\Examples\ModelExample([
+    $model = new ModelExample([
         'paid' => '1.00',
         'paid_currency' => 'USD',
     ]);
@@ -118,7 +120,7 @@ it('stores currency code in separate column', function () {
 });
 
 it('returns null when currency column is null', function () {
-    $model = new \Tests\Examples\ModelExample([
+    $model = new ModelExample([
         'paid' => '1.00',
         'paid_currency' => null,
     ]);
