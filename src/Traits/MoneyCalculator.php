@@ -67,7 +67,7 @@ trait MoneyCalculator
 
     public function isZero(): bool
     {
-        return (float) $this->getDecimal() === 0.0;
+        return $this->getCents() === '0';
     }
 
     public function equals(Money $money): bool

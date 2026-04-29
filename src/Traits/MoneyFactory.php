@@ -69,10 +69,10 @@ use JosefTraxler\LaravelMoney\Currency;
 trait MoneyFactory
 {
     /**
-     * @param float|numeric-string $decimal
+     * @param int|float|numeric-string $decimal
      * @param non-empty-string|Contracts\Currencyable $currency
      */
-    public static function fromDecimal(float|string $decimal, string|Contracts\Currencyable $currency): Contracts\Money
+    public static function fromDecimal(int|float|string $decimal, string|Contracts\Currencyable $currency): Contracts\Money
     {
         return new static($decimal, $currency);
     }

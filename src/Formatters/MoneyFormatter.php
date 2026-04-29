@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosefTraxler\LaravelMoney\Formatters;
 
 use Illuminate\Support\Facades\App;
+use JosefTraxler\LaravelMoney\Contracts\Currency;
 use JosefTraxler\LaravelMoney\Contracts\Currencyable;
 use JosefTraxler\LaravelMoney\Contracts\Money;
 use NumberFormatter;
@@ -15,10 +16,7 @@ class MoneyFormatter implements \JosefTraxler\LaravelMoney\Contracts\MoneyFormat
     {
         return self::decimalFormatter(
             $locale,
-            fn (\NumberFormatter $formatter) => $formatter->setAttribute(
-                \NumberFormatter::FRACTION_DIGITS,
-                $money->getCurrency()->getPrecision(),
-            ),
+            $money->getCurrency(),
         )->format(
             (float) $money->getDecimal(),
         ) ?: $money->getDecimal();
@@ -29,16 +27,15 @@ class MoneyFormatter implements \JosefTraxler\LaravelMoney\Contracts\MoneyFormat
         /** @var array<string, string> $cache */
         static $cache = [];
 
+        $locale ??= App::getLocale();
+
         $money = $currencyOrMoney instanceof Money
             ? $currencyOrMoney
             : new \JosefTraxler\LaravelMoney\Money(0, $currencyOrMoney);
 
         return $cache[$locale . '-' . $money->getCurrency()->getCode()] ??= self::currencyFormatter(
             $locale,
-            fn (\NumberFormatter $formatter) => $formatter->setTextAttribute(
-                \NumberFormatter::CURRENCY_CODE,
-                $money->getCurrency()->getCode(),
-            )
+            $money->getCurrency(),
         )->getSymbol(NumberFormatter::CURRENCY_SYMBOL) ?: $money->getCurrency()->getCode();
     }
 
@@ -46,37 +43,48 @@ class MoneyFormatter implements \JosefTraxler\LaravelMoney\Contracts\MoneyFormat
     {
         return (string) self::currencyFormatter(
             $locale,
-            fn (\NumberFormatter $formatter) => $formatter->setAttribute(
-                \NumberFormatter::FRACTION_DIGITS,
-                $money->getCurrency()->getPrecision(),
-            ),
+            $money->getCurrency(),
         )->formatCurrency(
             (float) $money->getDecimal(),
             $money->getCurrency()->getCode(),
         ) ?: $money->getCurrency()->getCode() . "\u{00A0}" . $money->getDecimal();
     }
 
-    protected static function currencyFormatter(?string $locale = null, ?\Closure $initFormatter = null): \NumberFormatter
+    protected static function currencyFormatter(?string $locale, Currency $currency): \NumberFormatter
     {
         /** @var array<\NumberFormatter> $formatters */
         static $formatters = [];
         $locale ??= App::getLocale();
-        $formatter = $formatters[$locale] ??= new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
-        if ($initFormatter) {
-            $initFormatter($formatter);
-        }
-        return $formatter;
+        $precision = $currency->getPrecision();
+
+        return $formatters[$locale . ':' . $currency->getCode() . ':' . $precision] ??= tap(
+            new \NumberFormatter($locale, \NumberFormatter::CURRENCY),
+            function (\NumberFormatter $formatter) use ($currency, $precision) {
+                $formatter->setTextAttribute(
+                    \NumberFormatter::CURRENCY_CODE,
+                    $currency->getCode(),
+                );
+                $formatter->setAttribute(
+                    \NumberFormatter::FRACTION_DIGITS,
+                    $precision,
+                );
+            }
+        );
     }
 
-    protected static function decimalFormatter(?string $locale = null, ?\Closure $initFormatter = null): \NumberFormatter
+    protected static function decimalFormatter(?string $locale, Currency $currency): \NumberFormatter
     {
         /** @var array<\NumberFormatter> $formatters */
         static $formatters = [];
         $locale ??= App::getLocale();
-        $formatter = $formatters[$locale] ??= new \NumberFormatter($locale, \NumberFormatter::DECIMAL);
-        if ($initFormatter) {
-            $initFormatter($formatter);
-        }
-        return $formatter;
+        $precision = $currency->getPrecision();
+
+        return $formatters[$locale . ':' . $precision] ??= tap(
+            new \NumberFormatter($locale, \NumberFormatter::DECIMAL),
+            fn (\NumberFormatter $formatter) => $formatter->setAttribute(
+                \NumberFormatter::FRACTION_DIGITS,
+                $precision,
+            ),
+        );
     }
 }
