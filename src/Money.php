@@ -9,6 +9,7 @@ use JosefTraxler\LaravelMoney\Traits\MoneyCastable;
 use JosefTraxler\LaravelMoney\Traits\MoneyFactory;
 use JosefTraxler\LaravelMoney\Traits\MoneyHtmlable;
 use JosefTraxler\LaravelMoney\Traits\MoneyNormalizer;
+use JosefTraxler\LaravelMoney\Traits\MoneySerializable;
 
 class Money implements
     Contracts\Money,
@@ -21,6 +22,7 @@ class Money implements
     use MoneyFactory;
     use MoneyHtmlable;
     use MoneyNormalizer;
+    use MoneySerializable;
 
     /** @var numeric-string */
     private readonly string $decimal;
@@ -62,18 +64,5 @@ class Money implements
     public function __toString(): string
     {
         return $this->toHumanReadable();
-    }
-
-    public function jsonSerialize(): array
-    {
-        return [
-            'decimal' => $this->decimal,
-            'currency' => $this->currency->getCode(),
-        ];
-    }
-
-    public static function fromJson(array $json): static
-    {
-        return new static($json['decimal'], $json['currency']);
     }
 }
