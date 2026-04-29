@@ -24,18 +24,18 @@ class Money implements
 
     /** @var numeric-string */
     private readonly string $decimal;
-    private readonly Contracts\Currency $currency;
+    private readonly Contracts\Currencyable $currency;
 
     /** @var numeric-string */
     private readonly string $cents;
 
     /**
      * @param numeric-string|float|int $decimal
-     * @param Contracts\Currency|non-empty-string $currency
+     * @param Contracts\Currencyable|non-empty-string $currency
      */
     final public function __construct(
         string|float|int $decimal,
-        Contracts\Currency|string  $currency,
+        Contracts\Currencyable|string $currency,
     ) {
         $this->currency = Currency::of($currency);
         $this->decimal = self::normalizeAmountInMajorUnit($decimal, $this->currency);

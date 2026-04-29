@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace JosefTraxler\LaravelMoney\Contracts;
 
-interface Currency extends \Stringable
+interface Currency extends Currencyable, \Stringable
 {
-    /** @return non-empty-string */
-    public function getCode(): string;
-
-    public function equals(Currency $currency): bool;
+    public function equals(Currencyable|string $currency): bool;
 
     /** @return non-negative-int */
     public function getPrecision(): int;
-
 }

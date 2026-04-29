@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace JosefTraxler\LaravelMoney\Formatters;
 
 use Illuminate\Support\Facades\App;
-use JosefTraxler\LaravelMoney\Contracts\Currency;
+use JosefTraxler\LaravelMoney\Contracts\Currencyable;
 use JosefTraxler\LaravelMoney\Contracts\Money;
 use NumberFormatter;
 
@@ -24,7 +24,7 @@ class MoneyFormatter implements \JosefTraxler\LaravelMoney\Contracts\MoneyFormat
         ) ?: $money->getDecimal();
     }
 
-    public function humanReadableCurrency(Currency|Money $currencyOrMoney, ?string $locale = null): string
+    public function humanReadableCurrency(Currencyable|Money $currencyOrMoney, ?string $locale = null): string
     {
         /** @var array<string, string> $cache */
         static $cache = [];

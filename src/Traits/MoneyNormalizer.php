@@ -12,8 +12,10 @@ use JosefTraxler\LaravelMoney\Contracts\Currency;
 trait MoneyNormalizer
 {
     /** @return numeric-string */
-    protected static function normalizeAmountInMajorUnit(string|float|int $amountInMajorUnit, Currency $currency): string
-    {
+    private static function normalizeAmountInMajorUnit(
+        string|float|int $amountInMajorUnit,
+        Currency $currency,
+    ): string {
         return self::normalizeAmount($amountInMajorUnit, $currency->getPrecision());
     }
 

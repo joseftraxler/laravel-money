@@ -10,7 +10,6 @@ use JosefTraxler\LaravelMoney\Contracts;
 use JosefTraxler\LaravelMoney\Facades\MoneyDataProvider;
 
 /**
- * @phpstan-require-implements \JosefTraxler\LaravelMoney\Contracts\MoneyGettable
  * @phpstan-require-implements \JosefTraxler\LaravelMoney\Contracts\MoneyCastable
  */
 trait MoneyCastable

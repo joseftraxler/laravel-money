@@ -20,13 +20,13 @@ class Currency implements Contracts\Currency
     /** @param non-empty-string $code */
     final private function __construct(string $code)
     {
-        $this->code = strtoupper($code);
+        $this->code = $code;
     }
 
-    /** @param non-empty-string|Contracts\Currency $code */
-    final public static function of(string|Contracts\Currency $code): self
+    /** @param non-empty-string|Contracts\Currencyable $code */
+    final public static function of(string|Contracts\Currencyable $code): Contracts\Currency
     {
-        $code = $code instanceof Contracts\Currency ? $code->getCode() : strtoupper($code);
+        $code = strtoupper($code instanceof Contracts\Currencyable ? $code->getCode() : $code);
         return self::$instances[$code] ??= new Currency($code);
     }
 
@@ -35,9 +35,12 @@ class Currency implements Contracts\Currency
         return $this->code;
     }
 
-    public function equals(Contracts\Currency $currency): bool
+    public function equals(Contracts\Currencyable|string $currency): bool
     {
-        return $this->code === $currency->getCode();
+        if ($currency instanceof Contracts\Currencyable) {
+            $currency = $currency->getCode();
+        }
+        return $this->code === $currency;
     }
 
     public function __toString(): string

@@ -12,15 +12,15 @@ use JosefTraxler\LaravelMoney\Money;
 final class AsMoney
 {
     /**
-     * @param null|non-empty-string|Contracts\Currency $currency
+     * @param null|non-empty-string|Contracts\Currencyable $currency
      *
      * @return ($currency is null ? MoneyCastBuilder : CastsAttributes<Contracts\Money,Contracts\Money>)
      */
     public static function inDecimal(
-        null|string|Contracts\Currency $currency = null,
+        null|string|Contracts\Currencyable $currency = null,
     ): MoneyCastBuilder|CastsAttributes {
         $builder = new MoneyCastBuilder(
-            getMoney: function ($value, Contracts\Currency $currency): Contracts\Money {
+            getMoney: function ($value, Contracts\Currencyable $currency): Contracts\Money {
                 /** @var numeric-string $value */
                 return Money::fromDecimal($value, $currency);
             },
@@ -32,15 +32,15 @@ final class AsMoney
     }
 
     /**
-     * @param null|non-empty-string|Contracts\Currency $currency
+     * @param null|non-empty-string|Contracts\Currencyable $currency
      *
      * @return ($currency is null ? MoneyCastBuilder : CastsAttributes<Contracts\Money,Contracts\Money>)
      */
     public static function inCents(
-        null|string|Contracts\Currency $currency = null,
+        null|string|Contracts\Currencyable $currency = null,
     ): MoneyCastBuilder|CastsAttributes {
         $builder = new MoneyCastBuilder(
-            getMoney: function ($value, Contracts\Currency $currency): Contracts\Money {
+            getMoney: function ($value, Contracts\Currencyable $currency): Contracts\Money {
                 /** @var numeric-string $value */
                 return Money::fromCents($value, $currency);
             },

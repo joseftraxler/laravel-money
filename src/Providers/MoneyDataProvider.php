@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace JosefTraxler\LaravelMoney\Providers;
 
 use Illuminate\Contracts\Config\Repository;
-use JosefTraxler\LaravelMoney\Contracts\Currency;
+use JosefTraxler\LaravelMoney\Contracts\Currencyable;
 
 class MoneyDataProvider implements \JosefTraxler\LaravelMoney\Contracts\MoneyDataProvider
 {
@@ -14,7 +14,7 @@ class MoneyDataProvider implements \JosefTraxler\LaravelMoney\Contracts\MoneyDat
     ) {
     }
 
-    public function defaultCurrency(): ?Currency
+    public function defaultCurrency(): ?Currencyable
     {
         $defaultCode = $this->config->get('money.default_currency');
         if (is_null($defaultCode) || $defaultCode === '') {
@@ -81,8 +81,8 @@ class MoneyDataProvider implements \JosefTraxler\LaravelMoney\Contracts\MoneyDat
             throw new \UnexpectedValueException("Invalid currency class name, value must be a string.");
         }
 
-        if (! is_subclass_of($configClass, Currency::class)) {
-            throw new \UnexpectedValueException("Invalid currency class name, value must be a subclass of " . Currency::class);
+        if (! is_subclass_of($configClass, Currencyable::class)) {
+            throw new \UnexpectedValueException("Invalid currency class name, value must be a subclass of " . Currencyable::class);
         }
 
         return $configClass;

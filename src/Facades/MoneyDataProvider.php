@@ -8,7 +8,7 @@ namespace JosefTraxler\LaravelMoney\Facades;
  * A facade for accessing the MoneyDatasetProvider, providing a static interface
  * for working with monetary dataset configurations and defaults.
  *
- * @method static \JosefTraxler\LaravelMoney\Contracts\Currency|null defaultCurrency()
+ * @method static \JosefTraxler\LaravelMoney\Contracts\Currencyable|null defaultCurrency()
  * @method static non-negative-int precision(string $currencyCode)
  * @method static class-string<\JosefTraxler\LaravelMoney\Contracts\Currency> getCurrencyClassName()
  *

@@ -6,13 +6,13 @@ namespace JosefTraxler\LaravelMoney\Builders;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
-use JosefTraxler\LaravelMoney\Contracts\Currency;
+use JosefTraxler\LaravelMoney\Contracts\Currencyable;
 use JosefTraxler\LaravelMoney\Contracts\Money;
 
 class MoneyCastBuilder
 {
     /**
-     * @param \Closure(mixed $value, Currency $currency): Money $getMoney
+     * @param \Closure(mixed $value, Currencyable $currency): Money $getMoney
      * @param \Closure(Money $money): mixed $setMoney
      */
     public function __construct(
@@ -22,10 +22,10 @@ class MoneyCastBuilder
     }
 
     /**
-     * @param non-empty-string|Currency $currency
+     * @param non-empty-string|Currencyable $currency
      * @return CastsAttributes<Money, Money>
      */
-    public function withCurrency(string|Currency $currency): CastsAttributes
+    public function withCurrency(string|Currencyable $currency): CastsAttributes
     {
         return $this->cast(
             fn (Model $model) => $currency,
@@ -62,7 +62,7 @@ class MoneyCastBuilder
             $setCurrency,
         ) implements CastsAttributes {
             /**
-             * @param \Closure(mixed $value, Currency $currency): Money $getMoney
+             * @param \Closure(mixed $value, Currencyable $currency): Money $getMoney
              * @param \Closure(Money $money): mixed $setMoney
              * @param \Closure(Model $model): mixed $getCurrency
              * @param \Closure(?Money $money): array<string, mixed> $setCurrency
@@ -102,7 +102,7 @@ class MoneyCastBuilder
                 ];
             }
 
-            private function getCurrency(Model $model): ?Currency
+            private function getCurrency(Model $model): ?Currencyable
             {
                 $currency = ($this->getCurrency)($model);
 
@@ -114,7 +114,7 @@ class MoneyCastBuilder
                     $currency = \JosefTraxler\LaravelMoney\Currency::of($currency);
                 }
 
-                if (! $currency instanceof Currency) {
+                if (! $currency instanceof Currencyable) {
                     throw new \InvalidArgumentException('Currency must be a string or instance of Currency');
                 }
 

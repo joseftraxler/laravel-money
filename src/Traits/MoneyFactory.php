@@ -68,19 +68,19 @@ trait MoneyFactory
 {
     /**
      * @param float|numeric-string $decimal
-     * @param non-empty-string|Contracts\Currency $currency
+     * @param non-empty-string|Contracts\Currencyable $currency
      */
-    public static function fromDecimal(float|string $decimal, string|Contracts\Currency $currency): Contracts\Money
+    public static function fromDecimal(float|string $decimal, string|Contracts\Currencyable $currency): Contracts\Money
     {
         return new static($decimal, $currency);
     }
 
     /**
      * @param int|numeric-string $cents
-     * @param non-empty-string|Contracts\Currency $currency
+     * @param non-empty-string|Contracts\Currencyable $currency
      * @return Contracts\Money
      */
-    public static function fromCents(int|string $cents, string|Contracts\Currency $currency): Contracts\Money
+    public static function fromCents(int|string $cents, string|Contracts\Currencyable $currency): Contracts\Money
     {
         $currency = Currency::of($currency);
         return new static(
@@ -110,8 +110,14 @@ trait MoneyFactory
      * @param non-empty-string $code
      * @param int|float|numeric-string $decimal
      */
-    public static function fromCurrencyCode(string $code, int|float|string $decimal = '0'): Contracts\Money
+    public static function fromCurrencyCode(string $code, int|float|string|Contracts\MoneyGettable $decimal = '0'): Contracts\Money
     {
+        if ($decimal instanceof Contracts\MoneyGettable) {
+            if (! $decimal->getCurrency()->equals($code)) {
+                throw new \InvalidArgumentException("Currency mismatch: {$decimal->getCurrency()->getCode()} does not equal {$code}");
+            }
+            $decimal = $decimal->getDecimal();
+        }
         return static::fromDecimal($decimal, Currency::of($code));
     }
 }
