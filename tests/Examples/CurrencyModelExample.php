@@ -1,0 +1,29 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Examples;
+
+use Illuminate\Database\Eloquent\Model;
+use JosefTraxler\LaravelMoney\Contracts\Currencyable;
+
+/**
+ * @property string $code
+ * @property int $precision
+ */
+class CurrencyModelExample extends Model implements Currencyable
+{
+    protected $guarded = [];
+    protected function casts(): array
+    {
+        return [
+            'code' => 'string',
+            'precision' => 'int',
+        ];
+    }
+
+    public function getCode(): string
+    {
+        return $this->code;
+    }
+}
