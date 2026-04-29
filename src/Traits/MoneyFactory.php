@@ -14,52 +14,54 @@ use JosefTraxler\LaravelMoney\Currency;
  * as static method names, as well as directly creating Money instances from
  * a specified currency code and amount.
  *
- * @method static static USD(int|float|numeric-string $decimal = '0')
- * @method static static EUR(int|float|numeric-string $decimal = '0')
- * @method static static GBP(int|float|numeric-string $decimal = '0')
- * @method static static JPY(int|float|numeric-string $decimal = '0')
- * @method static static AUD(int|float|numeric-string $decimal = '0')
- * @method static static CAD(int|float|numeric-string $decimal = '0')
- * @method static static CHF(int|float|numeric-string $decimal = '0')
- * @method static static CNY(int|float|numeric-string $decimal = '0')
- * @method static static SEK(int|float|numeric-string $decimal = '0')
- * @method static static NZD(int|float|numeric-string $decimal = '0')
- * @method static static CZK(int|float|numeric-string $decimal = '0')
- * @method static static NOK(int|float|numeric-string $decimal = '0')
- * @method static static DKK(int|float|numeric-string $decimal = '0')
- * @method static static PLN(int|float|numeric-string $decimal = '0')
- * @method static static HKD(int|float|numeric-string $decimal = '0')
- * @method static static SGD(int|float|numeric-string $decimal = '0')
- * @method static static THB(int|float|numeric-string $decimal = '0')
- * @method static static MXN(int|float|numeric-string $decimal = '0')
- * @method static static BRL(int|float|numeric-string $decimal = '0')
- * @method static static ZAR(int|float|numeric-string $decimal = '0')
- * @method static static INR(int|float|numeric-string $decimal = '0')
- * @method static static RUB(int|float|numeric-string $decimal = '0')
- * @method static static TRY(int|float|numeric-string $decimal = '0')
- * @method static static KRW(int|float|numeric-string $decimal = '0')
- * @method static static IDR(int|float|numeric-string $decimal = '0')
- * @method static static MYR(int|float|numeric-string $decimal = '0')
- * @method static static PHP(int|float|numeric-string $decimal = '0')
- * @method static static TWD(int|float|numeric-string $decimal = '0')
- * @method static static AED(int|float|numeric-string $decimal = '0')
- * @method static static SAR(int|float|numeric-string $decimal = '0')
- * @method static static ILS(int|float|numeric-string $decimal = '0')
- * @method static static EGP(int|float|numeric-string $decimal = '0')
- * @method static static CLP(int|float|numeric-string $decimal = '0')
- * @method static static COP(int|float|numeric-string $decimal = '0')
- * @method static static ARS(int|float|numeric-string $decimal = '0')
- * @method static static PEN(int|float|numeric-string $decimal = '0')
- * @method static static VND(int|float|numeric-string $decimal = '0')
- * @method static static PKR(int|float|numeric-string $decimal = '0')
- * @method static static BGN(int|float|numeric-string $decimal = '0')
- * @method static static HRK(int|float|numeric-string $decimal = '0')
- * @method static static RON(int|float|numeric-string $decimal = '0')
- * @method static static UAH(int|float|numeric-string $decimal = '0')
- * @method static static NGN(int|float|numeric-string $decimal = '0')
- * @method static static KES(int|float|numeric-string $decimal = '0')
- * @method static static GHS(int|float|numeric-string $decimal = '0')
- * @method static static TND(int|float|numeric-string $decimal = '0')
+ * @type TDecimal int|float|numeric-string
+ *
+ * @method static static USD(TDecimal $decimal = '0')
+ * @method static static EUR(TDecimal $decimal = '0')
+ * @method static static GBP(TDecimal $decimal = '0')
+ * @method static static JPY(TDecimal $decimal = '0')
+ * @method static static AUD(TDecimal $decimal = '0')
+ * @method static static CAD(TDecimal $decimal = '0')
+ * @method static static CHF(TDecimal $decimal = '0')
+ * @method static static CNY(TDecimal $decimal = '0')
+ * @method static static SEK(TDecimal $decimal = '0')
+ * @method static static NZD(TDecimal $decimal = '0')
+ * @method static static CZK(TDecimal $decimal = '0')
+ * @method static static NOK(TDecimal $decimal = '0')
+ * @method static static DKK(TDecimal $decimal = '0')
+ * @method static static PLN(TDecimal $decimal = '0')
+ * @method static static HKD(TDecimal $decimal = '0')
+ * @method static static SGD(TDecimal $decimal = '0')
+ * @method static static THB(TDecimal $decimal = '0')
+ * @method static static MXN(TDecimal $decimal = '0')
+ * @method static static BRL(TDecimal $decimal = '0')
+ * @method static static ZAR(TDecimal $decimal = '0')
+ * @method static static INR(TDecimal $decimal = '0')
+ * @method static static RUB(TDecimal $decimal = '0')
+ * @method static static TRY(TDecimal $decimal = '0')
+ * @method static static KRW(TDecimal $decimal = '0')
+ * @method static static IDR(TDecimal $decimal = '0')
+ * @method static static MYR(TDecimal $decimal = '0')
+ * @method static static PHP(TDecimal $decimal = '0')
+ * @method static static TWD(TDecimal $decimal = '0')
+ * @method static static AED(TDecimal $decimal = '0')
+ * @method static static SAR(TDecimal $decimal = '0')
+ * @method static static ILS(TDecimal $decimal = '0')
+ * @method static static EGP(TDecimal $decimal = '0')
+ * @method static static CLP(TDecimal $decimal = '0')
+ * @method static static COP(TDecimal $decimal = '0')
+ * @method static static ARS(TDecimal $decimal = '0')
+ * @method static static PEN(TDecimal $decimal = '0')
+ * @method static static VND(TDecimal $decimal = '0')
+ * @method static static PKR(TDecimal $decimal = '0')
+ * @method static static BGN(TDecimal $decimal = '0')
+ * @method static static HRK(TDecimal $decimal = '0')
+ * @method static static RON(TDecimal $decimal = '0')
+ * @method static static UAH(TDecimal $decimal = '0')
+ * @method static static NGN(TDecimal $decimal = '0')
+ * @method static static KES(TDecimal $decimal = '0')
+ * @method static static GHS(TDecimal $decimal = '0')
+ * @method static static TND(TDecimal $decimal = '0')
  *
  * @phpstan-require-implements \JosefTraxler\LaravelMoney\Contracts\MoneyGettable
  * @phpstan-require-implements \JosefTraxler\LaravelMoney\Contracts\MoneyFactory
@@ -108,16 +110,10 @@ trait MoneyFactory
 
     /**
      * @param non-empty-string $code
-     * @param int|float|numeric-string $decimal
+     * @param TDecimal $decimal
      */
-    public static function fromCurrencyCode(string $code, int|float|string|Contracts\MoneyGettable $decimal = '0'): Contracts\Money
+    private static function fromCurrencyCode(string $code, int|float|string $decimal = '0'): Contracts\Money
     {
-        if ($decimal instanceof Contracts\MoneyGettable) {
-            if (! $decimal->getCurrency()->equals($code)) {
-                throw new \InvalidArgumentException("Currency mismatch: {$decimal->getCurrency()->getCode()} does not equal {$code}");
-            }
-            $decimal = $decimal->getDecimal();
-        }
         return static::fromDecimal($decimal, Currency::of($code));
     }
 }

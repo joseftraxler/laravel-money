@@ -20,10 +20,4 @@ interface MoneyFactory
      * @return Money
      */
     public static function fromCents(int|string $cents, string|Currency $currency): Money;
-
-    /**
-     * @param non-empty-string $code
-     * @param int|float|numeric-string $decimal
-     */
-    public static function fromCurrencyCode(string $code, int|float|string $decimal = '0'): Money;
 }
