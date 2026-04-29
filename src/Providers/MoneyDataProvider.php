@@ -6,9 +6,13 @@ namespace JosefTraxler\LaravelMoney\Providers;
 
 use Illuminate\Contracts\Config\Repository;
 use JosefTraxler\LaravelMoney\Contracts\Currencyable;
+use JosefTraxler\LaravelMoney\Contracts\MoneyDataProvider as MoneyDataProviderInterface;
 
-class MoneyDataProvider implements \JosefTraxler\LaravelMoney\Contracts\MoneyDataProvider
+class MoneyDataProvider implements MoneyDataProviderInterface
 {
+    /** @var array<non-empty-string, non-negative-int> */
+    private array $precisionCache = [];
+
     public function __construct(
         private readonly Repository $config,
     ) {
@@ -28,17 +32,23 @@ class MoneyDataProvider implements \JosefTraxler\LaravelMoney\Contracts\MoneyDat
 
     public function precision(string $currencyCode): int
     {
+        return $this->precisionCache[$currencyCode] ??= $this->resolvePrecision($currencyCode);
+    }
+
+    /** @return non-negative-int */
+    private function resolvePrecision(string $currencyCode): int
+    {
         $result = filter_var(
-            $this->config->get(
-                'money.currencies.' . $currencyCode,
-                $this->getDefaultPrecision($currencyCode),
-            ),
+            $this->config->get('money.currencies.' . $currencyCode . '.precision')
+                ?? $this->getDefaultPrecision($currencyCode),
             FILTER_VALIDATE_INT,
             FILTER_NULL_ON_FAILURE,
         ) ?? throw new \UnexpectedValueException("Invalid precision for currency {$currencyCode}, value must be an integer.");
+
         if ($result < 0) {
             throw new \UnexpectedValueException("Invalid precision for currency {$currencyCode}, value must be greater than or equal to 0.");
         }
+
         return $result;
     }
 
@@ -69,22 +79,5 @@ class MoneyDataProvider implements \JosefTraxler\LaravelMoney\Contracts\MoneyDat
             'BHD', 'IQD', 'JOD', 'KWD', 'LYD', 'OMR', 'TND' => 3,
             default => 2,
         };
-    }
-
-    public function getCurrencyClassName(): string
-    {
-        $configClass = $this->config->get('money.currency_class');
-        if ($configClass === null) {
-            return \JosefTraxler\LaravelMoney\Currency::class;
-        }
-        if (! is_string($configClass)) {
-            throw new \UnexpectedValueException("Invalid currency class name, value must be a string.");
-        }
-
-        if (! is_subclass_of($configClass, Currencyable::class)) {
-            throw new \UnexpectedValueException("Invalid currency class name, value must be a subclass of " . Currencyable::class);
-        }
-
-        return $configClass;
     }
 }
