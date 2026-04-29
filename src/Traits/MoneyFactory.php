@@ -14,7 +14,7 @@ use JosefTraxler\LaravelMoney\Currency;
  * as static method names, as well as directly creating Money instances from
  * a specified currency code and amount.
  *
- * @type TDecimal int|float|numeric-string
+ * @phpstan-type TDecimal int|float|numeric-string
  *
  * @method static static USD(TDecimal $decimal = '0')
  * @method static static EUR(TDecimal $decimal = '0')
@@ -112,7 +112,7 @@ trait MoneyFactory
      * @param non-empty-string $code
      * @param TDecimal $decimal
      */
-    private static function fromCurrencyCode(string $code, int|float|string $decimal = '0'): Contracts\Money
+    protected static function fromCurrencyCode(string $code, int|float|string $decimal = '0'): Contracts\Money
     {
         return static::fromDecimal($decimal, Currency::of($code));
     }
