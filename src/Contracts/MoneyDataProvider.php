@@ -11,5 +11,5 @@ interface MoneyDataProvider
     /**
      * @return non-negative-int
      */
-    public function precision(Currency $currencyCode): int;
+    public function precision(Currency $currency): int;
 }

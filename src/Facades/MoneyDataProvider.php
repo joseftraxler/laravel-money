@@ -9,7 +9,7 @@ namespace JosefTraxler\LaravelMoney\Facades;
  * for working with monetary dataset configurations and defaults.
  *
  * @method static \JosefTraxler\LaravelMoney\Contracts\Currency|null defaultCurrency()
- * @method static non-negative-int precision(\JosefTraxler\LaravelMoney\Contracts\Currency $currencyCode)
+ * @method static non-negative-int precision(\JosefTraxler\LaravelMoney\Contracts\Currency $currency)
  * @method static class-string<\JosefTraxler\LaravelMoney\Contracts\Currency> getCurrencyClassName()
  *
  * @see \JosefTraxler\LaravelMoney\Contracts\MoneyDataProvider

@@ -30,34 +30,34 @@ class MoneyDataProvider implements MoneyDataProviderInterface
         return \JosefTraxler\LaravelMoney\Currency::of($defaultCode);
     }
 
-    public function precision(Currency $currencyCode): int
+    public function precision(Currency $currency): int
     {
-        return $this->precisionCache[$currencyCode->getCode()] ??= $this->resolvePrecision($currencyCode);
+        return $this->precisionCache[$currency->getCode()] ??= $this->resolvePrecision($currency);
     }
 
     /** @return non-negative-int */
-    private function resolvePrecision(Currency $currencyCode): int
+    private function resolvePrecision(Currency $currency): int
     {
         $result = filter_var(
-            $this->config->get('money.currencies.' . $currencyCode->getCode() . '.precision')
-                ?? $this->getDefaultPrecision($currencyCode),
+            $this->config->get('money.currencies.' . $currency->getCode() . '.precision')
+                ?? $this->getDefaultPrecision($currency),
             FILTER_VALIDATE_INT,
             FILTER_NULL_ON_FAILURE,
-        ) ?? throw new \UnexpectedValueException("Invalid precision for currency {$currencyCode->getCode()}, value must be an integer.");
+        ) ?? throw new \UnexpectedValueException("Invalid precision for currency {$currency->getCode()}, value must be an integer.");
 
         if ($result < 0) {
-            throw new \UnexpectedValueException("Invalid precision for currency {$currencyCode->getCode()}, value must be greater than or equal to 0.");
+            throw new \UnexpectedValueException("Invalid precision for currency {$currency->getCode()}, value must be greater than or equal to 0.");
         }
 
         return $result;
     }
 
-    public function getDefaultPrecision(Currency $currencyCode): int
+    public function getDefaultPrecision(Currency $currency): int
     {
         $result = filter_var(
             $this->config->get(
                 'money.default_precision',
-                $this->detectDefaultPrecision($currencyCode),
+                $this->detectDefaultPrecision($currency),
             ),
             FILTER_VALIDATE_INT,
             FILTER_NULL_ON_FAILURE,
@@ -70,9 +70,9 @@ class MoneyDataProvider implements MoneyDataProviderInterface
         return $result;
     }
 
-    private function detectDefaultPrecision(Currency $currencyCode): int
+    private function detectDefaultPrecision(Currency $currency): int
     {
-        return match ($currencyCode->getCode()) {
+        return match ($currency->getCode()) {
             // Zero decimal currencies
             'BIF', 'CLP', 'DJF', 'GNF', 'JPY', 'KMF', 'KRW', 'MGA', 'PYG', 'RWF', 'UGX', 'VND', 'VUV', 'XAF', 'XOF', 'XPF' => 0,
             // Three decimal currencies
