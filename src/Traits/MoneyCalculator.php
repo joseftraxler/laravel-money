@@ -9,7 +9,8 @@ use JosefTraxler\LaravelMoney\Enums\RoundMode;
 use JosefTraxler\LaravelMoney\Enums\RoundUnit;
 
 /**
- * @phpstan-require-implements Money
+ * @phpstan-require-implements \JosefTraxler\LaravelMoney\Contracts\MoneyGettable
+ * @phpstan-require-implements \JosefTraxler\LaravelMoney\Contracts\MoneyCalculator
  */
 trait MoneyCalculator
 {

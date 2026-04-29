@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace JosefTraxler\LaravelMoney;
 
-use Illuminate\Contracts\Database\Eloquent\Castable;
-use Illuminate\Contracts\Support\Htmlable;
 use JosefTraxler\LaravelMoney\Traits\MoneyCalculator;
 use JosefTraxler\LaravelMoney\Traits\MoneyCastable;
 use JosefTraxler\LaravelMoney\Traits\MoneyFactory;
 use JosefTraxler\LaravelMoney\Traits\MoneyHtmlable;
 use JosefTraxler\LaravelMoney\Traits\MoneyNormalizer;
 
-class Money implements Contracts\Money, Castable, Htmlable
+class Money implements
+    Contracts\Money,
+    Contracts\MoneyCastable,
+    Contracts\MoneyJsonSerializable,
+    \Stringable
 {
     use MoneyCalculator;
     use MoneyCastable;
@@ -55,5 +57,23 @@ class Money implements Contracts\Money, Castable, Htmlable
     public function getCurrency(): Contracts\Currency
     {
         return $this->currency;
+    }
+
+    public function __toString(): string
+    {
+        return $this->toHumanReadable();
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'decimal' => $this->decimal,
+            'currency' => $this->currency->getCode(),
+        ];
+    }
+
+    public static function fromJson(array $json): static
+    {
+        return new static($json['decimal'], $json['currency']);
     }
 }

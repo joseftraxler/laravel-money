@@ -61,7 +61,8 @@ use JosefTraxler\LaravelMoney\Currency;
  * @method static static GHS(int|float|numeric-string $decimal = '0')
  * @method static static TND(int|float|numeric-string $decimal = '0')
  *
- * @phpstan-require-implements \JosefTraxler\LaravelMoney\Contracts\Money
+ * @phpstan-require-implements \JosefTraxler\LaravelMoney\Contracts\MoneyGettable
+ * @phpstan-require-implements \JosefTraxler\LaravelMoney\Contracts\MoneyFactory
  */
 trait MoneyFactory
 {
