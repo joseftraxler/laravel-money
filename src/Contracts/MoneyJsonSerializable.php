@@ -11,5 +11,8 @@ interface MoneyJsonSerializable extends \JsonSerializable
 
     public function toJson(): string;
 
-    public static function fromJson(string $json): static;
+    /**
+     * @return static&Money
+     */
+    public static function fromJson(string $json): Money;
 }
