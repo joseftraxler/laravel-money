@@ -38,7 +38,6 @@ Install the package via Composer:
 composer require joseftraxler/laravel-money
 ```
 
-
 The service provider is registered automatically through Laravel package discovery.
 
 ## Configuration
@@ -55,7 +54,7 @@ Example configuration:
 
 ```php
 return [
-    'default_currency' => 'USD',// cast default currency
+    'default_currency' => 'USD', // default currency used by casts when no currency is provided
     'default_precision' => 2,
     'currencies' => [
         'JPY' => ['precision' => 0],
@@ -84,16 +83,15 @@ $money->getDecimal(); // "10.45"
 $money->getCents(); // "1045"
 $money->getCurrency()->getCode(); // "EUR"
 
-$twoPieces = $money->multiply(2)->getDecimal();// "20.90"
+$twoPieces = $money->multiply(2)->getDecimal(); // "20.90"
 
 $product->price = $money;
-$model->save();
+$product->save();
 
-$product->price->toHumanReadable(locale: 'en_US'); // "€10.45"
-
+$product->price->toHumanReadable(locale: 'en_US'); // e.g.: "€10.45"
 ```
 
-In blade:
+In Blade:
 
 ```blade
 {{ $product->price }}
@@ -106,6 +104,9 @@ Currency codes are strict ISO 4217-style codes. They must contain exactly three 
 ### From decimal
 
 ```php
+use JosefTraxler\LaravelMoney\Currency;
+use JosefTraxler\LaravelMoney\Money;
+
 new Money('123.45', 'EUR');
 Money::fromDecimal('123.45', 'EUR');
 Money::EUR('123.45');
@@ -118,8 +119,6 @@ Money::fromDecimal('123.45', Currency::of('EUR'));
 Money::fromCents(12345, 'EUR'); // 123.45 EUR
 ```
 
-### From decimal
-
 ### Numeric strings are recommended
 
 The package accepts integers, floats, and numeric strings for convenience:
@@ -127,7 +126,7 @@ The package accepts integers, floats, and numeric strings for convenience:
 ```php
 Money::fromDecimal(10, 'EUR');
 Money::fromDecimal(10.50, 'EUR');
-Money::fromDecimal('10.50', 'EUR');// recommended
+Money::fromDecimal('10.50', 'EUR'); // recommended
 ```
 
 For exact monetary input, prefer numeric strings:
@@ -206,15 +205,12 @@ Money::EUR('0.00')->isZero(); // true
 
 ## Formatting
 
-In a laravel blade it automatically formats the money value according to locale.
+In Laravel Blade, money values are automatically formatted according to the current locale.
 
-For example, in locale en_US:
+For example, in `en_US`, this may render as `€12.35`:
 
 ```blade
-{{
-    /** prints €12.35 */
-    Money::EUR('12.35')
-}}
+{{ Money::EUR('12.35') }}
 ```
 
 Formatting uses PHP `NumberFormatter`, so the `intl` extension is required.
@@ -222,20 +218,20 @@ Formatting uses PHP `NumberFormatter`, so the `intl` extension is required.
 You can specify a custom locale:
 
 ```blade
-{{
-    /** prints 12,34 € */
-    Money::EUR('12.34')->toHumanReadable(locale: 'cs_CZ')
-}}
+{{ Money::EUR('12.34')->toHumanReadable(locale: 'cs_CZ') }}
 ```
+
+For `cs_CZ`, this may render as `12,34 €`.
 
 ## Eloquent casts
 
-LaravelMoney provides casts for storing money values as decimal or cents.
+Laravel Money provides casts for storing money values as decimal or cents.
 
-Casts definitions are specified by:
+Cast definitions are specified by:
+
 - currency code source
-  - fixed: defined by 3 uppercase letters
-  - dynamic: defined by a column name
+  - fixed: defined by a three-letter uppercase currency code
+  - dynamic: defined by a currency column name
 - amount source
   - decimal: amount in major units
   - cents: amount in minor units
@@ -248,8 +244,10 @@ Use this when the database column stores only the decimal amount and the currenc
 use Illuminate\Database\Eloquent\Model;
 use JosefTraxler\LaravelMoney\Money;
 
-class Product extends Model {
-    protected function casts(): array {
+class Product extends Model
+{
+    protected function casts(): array
+    {
         return [
             'price' => Money::class . ':EUR',
         ];
@@ -257,7 +255,7 @@ class Product extends Model {
 }
 ```
 
-usage:
+Usage:
 
 ```php
 $product = Product::find(1);
@@ -273,8 +271,10 @@ Use this when the amount and currency are stored in separate columns:
 use Illuminate\Database\Eloquent\Model;
 use JosefTraxler\LaravelMoney\Money;
 
-class Order extends Model {
-    protected function casts(): array {
+class Order extends Model
+{
+    protected function casts(): array
+    {
         return [
             'price' => Money::class . ':currency',
             'currency' => 'string',
@@ -283,19 +283,19 @@ class Order extends Model {
 }
 ```
 
-usage:
+Usage:
 
 ```php
 $order = new Order();
 $order->price = Money::USD('19.99');
-$order->amount->getDecimal();// "19.99"
-$order->amount->getCurrency()->getCode(); // "USD"
+$order->price->getDecimal(); // "19.99"
+$order->price->getCurrency()->getCode(); // "USD"
 $order->currency; // "USD"
 ```
 
 When using a dynamic currency column, the package stores the currency code automatically.
 
-### Cent storage
+### Cents storage
 
 If you store money as cents, pass `cents` as the second-cast argument:
 
@@ -303,8 +303,10 @@ If you store money as cents, pass `cents` as the second-cast argument:
 use Illuminate\Database\Eloquent\Model;
 use JosefTraxler\LaravelMoney\Money;
 
-class Payment extends Model {
-    protected function casts(): array {
+class Payment extends Model
+{
+    protected function casts(): array
+    {
         return [
             'amount_in_cents' => Money::class . ':currency,cents',
             'currency' => 'string',
@@ -313,7 +315,7 @@ class Payment extends Model {
 }
 ```
 
-Example bellow stores `1999` to amount_in_cents and `"EUR"` into currency:
+The example below stores `1999` in `amount_in_cents` and `"EUR"` in `currency`:
 
 ```php
 $payment = new Payment();
@@ -321,7 +323,7 @@ $payment->amount_in_cents = Money::EUR('19.99');
 $payment->save();
 ```
 
-The package automatically converts cents to Money by Money::fromCents when retrieving the value.
+When retrieving the value, the package automatically converts cents to `Money` using `Money::fromCents()`.
 
 ## Design notes
 
