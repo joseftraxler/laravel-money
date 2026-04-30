@@ -195,7 +195,7 @@ In a laravel blade it automatically formats the money value according to locale.
 
 For example, in locale en_US:
 
-```bladehtml
+```blade
 {{
     /** prints €12.35 */
     Money::EUR('12.35')
@@ -206,7 +206,7 @@ Formatting uses PHP `NumberFormatter`, so the `intl` extension is required.
 
 You can specify a custom locale:
 
-```bladehtml
+```blade
 {{
     /** prints 12,34 € */
     Money::EUR('12.34')->toHumanReadable(locale: 'cs_CZ')
