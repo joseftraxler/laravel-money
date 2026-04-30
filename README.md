@@ -295,7 +295,7 @@ $order->currency; // "USD"
 
 When using a dynamic currency column, the package stores the currency code automatically.
 
-### Cents storage
+### Cent storage
 
 If you store money as cents, pass `cents` as the second-cast argument:
 
