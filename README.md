@@ -77,12 +77,26 @@ Precision values are validated and cached per currency for performance.
 ## Basic usage
 
 ```php
-use JosefTraxler\LaravelMoney\Currency; use JosefTraxler\LaravelMoney\Money;
+use JosefTraxler\LaravelMoney\Money;
 
-$money = new Money('123.45', 'EUR');
-$money->getDecimal(); // "123.45"
-$money->getCents(); // "12345"
+$money = Money::EUR('10.45');
+$money->getDecimal(); // "10.45"
+$money->getCents(); // "1045"
 $money->getCurrency()->getCode(); // "EUR"
+
+$twoPieces = $money->multiply(2)->getDecimal();// "20.90"
+
+$product->price = $money;
+$model->save();
+
+$product->price->toHumanReadable(locale: 'en_US'); // "€10.45"
+
+```
+
+In blade:
+
+```blade
+{{ $product->price }}
 ```
 
 Currency codes are strict ISO 4217-style codes. They must contain exactly three letters.
@@ -92,6 +106,7 @@ Currency codes are strict ISO 4217-style codes. They must contain exactly three 
 ### From decimal
 
 ```php
+new Money('123.45', 'EUR');
 Money::fromDecimal('123.45', 'EUR');
 Money::EUR('123.45');
 Money::fromDecimal('123.45', Currency::of('EUR'));
@@ -322,6 +337,11 @@ Currency precision is resolved from configuration and cached per currency code. 
 
 Money amounts are normalized according to currency precision:
 
+```php
+Money::EUR('10')->getDecimal(); // "10.00"
+Money::JPY('10')->getDecimal(); // "10"
+```
+
 ## Testing
 
 Run the test suite:
@@ -347,7 +367,6 @@ Fix code style:
 ```bash
 composer cs-fix
 ```
-
 
 ## Contributing
 
