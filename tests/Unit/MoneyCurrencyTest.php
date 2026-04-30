@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use JosefTraxler\LaravelMoney\Currency;
-use Tests\Examples\CurrencyEnum;
-use Tests\Examples\CurrencyModelExample;
+use Tests\Examples\TestExampleCurrencyEnum;
+use Tests\Examples\TestExampleCurrencyModel;
 
 it('creates a Currency instance from currency string')
     ->expect(fn () => Currency::of('CZK'))
@@ -17,12 +17,12 @@ it('creates a Currency instance once')
 ;
 
 it('creates a Currency instance from Currencyable object')
-    ->expect(fn () => Currency::of(CurrencyEnum::CZK))
-    ->getCode()->toBe(CurrencyEnum::CZK->value)
+    ->expect(fn () => Currency::of(TestExampleCurrencyEnum::CZK))
+    ->getCode()->toBe(TestExampleCurrencyEnum::CZK->value)
 ;
 
 it('creates a Currency instance from Currencyable model')
-    ->expect(fn () => Currency::of(new CurrencyModelExample(['code' => 'CZK'])))
+    ->expect(fn () => Currency::of(new TestExampleCurrencyModel(['code' => 'CZK'])))
     ->getCode()->toBe('CZK')
 ;
 

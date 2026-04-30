@@ -13,7 +13,7 @@ use JosefTraxler\LaravelMoney\Money;
  * @property Money $paid_in_cents
  * @property string $paid_currency
  */
-class ModelExample extends Model
+class TestExampleModel extends Model
 {
     protected $guarded = [];
     protected function casts(): array
@@ -23,7 +23,7 @@ class ModelExample extends Model
             'paid' => Money::class . ':paid_currency',
             'paid_currency' => 'string',
             'paid_in_cents' => Money::class . ':paid_in_cents_currency,cents',
-            'paid_in_cents_currency' => CurrencyEnum::class,
+            'paid_in_cents_currency' => TestExampleCurrencyEnum::class,
         ];
     }
 

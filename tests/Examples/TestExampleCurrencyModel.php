@@ -11,7 +11,7 @@ use JosefTraxler\LaravelMoney\Contracts\Currencyable;
  * @property string $code
  * @property int $precision
  */
-class CurrencyModelExample extends Model implements Currencyable
+class TestExampleCurrencyModel extends Model implements Currencyable
 {
     protected $guarded = [];
     protected function casts(): array

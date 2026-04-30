@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 use JosefTraxler\LaravelMoney\Currency;
 use JosefTraxler\LaravelMoney\Money;
-use Tests\Examples\CurrencyEnum;
-use Tests\Examples\ModelExample;
+use Tests\Examples\TestExampleCurrencyEnum;
+use Tests\Examples\TestExampleModel;
 
 it('casts money:EUR to model attribute', function () {
-    $model = new ModelExample([
+    $model = new TestExampleModel([
         'price_eur' => '1.00',
     ]);
 
@@ -18,7 +18,7 @@ it('casts money:EUR to model attribute', function () {
 });
 
 it('casts money:currency to model attribute', function () {
-    $model = new ModelExample([
+    $model = new TestExampleModel([
         'paid' => '1.00',
         'paid_currency' => 'USD',
     ]);
@@ -29,7 +29,7 @@ it('casts money:currency to model attribute', function () {
 });
 
 it('sets money attribute', function () {
-    $model = new ModelExample([
+    $model = new TestExampleModel([
         'price_eur' => '1.00',
     ]);
 
@@ -39,7 +39,7 @@ it('sets money attribute', function () {
 });
 
 it('sets currency attribute when change money', function () {
-    $model = new ModelExample([
+    $model = new TestExampleModel([
         'paid' => '1.00',
         'paid_currency' => 'USD',
     ]);
@@ -50,7 +50,7 @@ it('sets currency attribute when change money', function () {
 });
 
 it('casts null money with fixed currency', function () {
-    $model = new ModelExample([
+    $model = new TestExampleModel([
         'price_eur' => null,
     ]);
 
@@ -58,7 +58,7 @@ it('casts null money with fixed currency', function () {
 });
 
 it('casts null money with dynamic currency', function () {
-    $model = new ModelExample([
+    $model = new TestExampleModel([
         'paid' => null,
         'paid_currency' => 'USD',
     ]);
@@ -67,18 +67,18 @@ it('casts null money with dynamic currency', function () {
 });
 
 it('casts money in cents with fixed currency')
-    ->expect((new ModelExample([
+    ->expect((new TestExampleModel([
         'paid_in_cents' => 150,
-        'paid_in_cents_currency' => CurrencyEnum::USD,
+        'paid_in_cents_currency' => TestExampleCurrencyEnum::USD,
     ]))->paid_in_cents)
     ->toBeInstanceOf(Money::class)
     ->getDecimal()->toBe('1.50')
     ->getCents()->toBe('150')
-    ->getCurrency()->toBe(Currency::of(CurrencyEnum::USD))
+    ->getCurrency()->toBe(Currency::of(TestExampleCurrencyEnum::USD))
 ;
 
 it('stores cents value in database attribute', function () {
-    $model = new ModelExample([
+    $model = new TestExampleModel([
         'paid_in_cents' => 100,
         'paid_in_cents_currency' => 'USD',
     ]);
@@ -86,11 +86,11 @@ it('stores cents value in database attribute', function () {
     $model->paid_in_cents = Money::fromCents('250', Currency::of('EUR'));
 
     expect($model->getRawAttribute('paid_in_cents'))->toBe('250');
-    expect($model->getAttribute('paid_in_cents_currency'))->toBe(CurrencyEnum::EUR);
+    expect($model->getAttribute('paid_in_cents_currency'))->toBe(TestExampleCurrencyEnum::EUR);
 });
 
 it('sets null money attribute', function () {
-    $model = new ModelExample([
+    $model = new TestExampleModel([
         'price_eur' => '1.00',
     ]);
 
@@ -100,7 +100,7 @@ it('sets null money attribute', function () {
 });
 
 it('stores decimal value in database attribute', function () {
-    $model = new ModelExample([
+    $model = new TestExampleModel([
         'price_eur' => '1.00',
     ]);
 
@@ -110,7 +110,7 @@ it('stores decimal value in database attribute', function () {
 });
 
 it('stores currency code in separate column', function () {
-    $model = new ModelExample([
+    $model = new TestExampleModel([
         'paid' => '1.00',
         'paid_currency' => 'USD',
     ]);
@@ -121,7 +121,7 @@ it('stores currency code in separate column', function () {
 });
 
 it('returns null when currency column is null', function () {
-    $model = new ModelExample([
+    $model = new TestExampleModel([
         'paid' => '1.00',
         'paid_currency' => null,
     ]);
@@ -130,7 +130,7 @@ it('returns null when currency column is null', function () {
 });
 
 it('stores cents cast as cents, not decimal', function () {
-    $model = new ModelExample([
+    $model = new TestExampleModel([
         'paid_in_cents' => 100,
         'paid_in_cents_currency' => 'USD',
     ]);
@@ -143,7 +143,7 @@ it('stores cents cast as cents, not decimal', function () {
 });
 
 it('rejects invalid currency codes', function () {
-    (new ModelExample([
+    (new TestExampleModel([
         'price_eur' => '10.00',
         'paid' => '5.00',
         'paid_currency' => 'INVALID',
@@ -151,12 +151,12 @@ it('rejects invalid currency codes', function () {
 })->throws(\InvalidArgumentException::class, 'Currency code must be a valid ISO 4217 code.');
 
 it('formats different currency precisions without leaking formatter state', function () {
-    $modelJpy = new ModelExample([
+    $modelJpy = new TestExampleModel([
         'paid' => '1000',
-        'paid_currency' => CurrencyEnum::JPY->value,
+        'paid_currency' => TestExampleCurrencyEnum::JPY->value,
     ]);
 
-    $modelEur = new ModelExample([
+    $modelEur = new TestExampleModel([
         'price_eur' => '10.50',
     ]);
 
@@ -171,11 +171,11 @@ it('formats different currency precisions without leaking formatter state', func
 });
 
 it('uses resolved app locale in currency symbol cache key', function () {
-    $model1 = new ModelExample([
+    $model1 = new TestExampleModel([
         'price_eur' => '10.00',
     ]);
 
-    $model2 = new ModelExample([
+    $model2 = new TestExampleModel([
         'paid' => '20.00',
         'paid_currency' => 'EUR',
     ]);
@@ -185,7 +185,7 @@ it('uses resolved app locale in currency symbol cache key', function () {
 });
 
 it('accepts integer decimal values through fromDecimal', function () {
-    $model = new ModelExample([
+    $model = new TestExampleModel([
         'price_eur' => '1.00',
     ]);
 
@@ -196,11 +196,11 @@ it('accepts integer decimal values through fromDecimal', function () {
 });
 
 it('detects zero without float conversion', function () {
-    $model1 = new ModelExample([
+    $model1 = new TestExampleModel([
         'price_eur' => '0.00',
     ]);
 
-    $model2 = new ModelExample([
+    $model2 = new TestExampleModel([
         'price_eur' => 0,
     ]);
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Examples;
 
-enum CurrencyEnum: string implements \JosefTraxler\LaravelMoney\Contracts\Currencyable
+enum TestExampleCurrencyEnum: string implements \JosefTraxler\LaravelMoney\Contracts\Currencyable
 {
     case EUR = 'EUR';
     case USD = 'USD';
