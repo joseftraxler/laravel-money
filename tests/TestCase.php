@@ -15,6 +15,8 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        $this->app = App::getFacadeRoot();
+        /** @var Stubs\FakeApplication $app */
+        $app = App::getFacadeRoot();
+        $this->app = $app;
     }
 }

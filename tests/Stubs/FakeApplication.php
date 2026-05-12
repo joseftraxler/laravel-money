@@ -230,6 +230,9 @@ final class FakeApplication implements Application, ArrayAccess
         throw new \RuntimeException('Not implemented yet');
     }
 
+    /**
+     * @param string $abstract
+     */
     public function bind($abstract, $concrete = null, $shared = false)
     {
         $this->bindings[$abstract] = $concrete;
@@ -243,6 +246,9 @@ final class FakeApplication implements Application, ArrayAccess
         throw new \RuntimeException('Not implemented yet');
     }
 
+    /**
+     * @param string $abstract
+     */
     public function bindIf($abstract, $concrete = null, $shared = false)
     {
         if (! isset($this->bindings[$abstract])) {
@@ -250,11 +256,17 @@ final class FakeApplication implements Application, ArrayAccess
         }
     }
 
+    /**
+     * @param string $abstract
+     */
     public function singleton($abstract, $concrete = null)
     {
         $this->bindings[$abstract] = $concrete;
     }
 
+    /**
+     * @param string $abstract
+     */
     public function singletonIf($abstract, $concrete = null)
     {
         if (! isset($this->bindings[$abstract])) {
@@ -277,6 +289,9 @@ final class FakeApplication implements Application, ArrayAccess
         // Unnecessary for tests
     }
 
+    /**
+     * @param string $abstract
+     */
     public function instance($abstract, $instance)
     {
         return $this->instances[$abstract] = $instance;

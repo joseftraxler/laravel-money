@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use JosefTraxler\LaravelMoney\Contracts\Currencyable;
 
 /**
- * @property string $code
+ * @property non-empty-string $code
  * @property int $precision
  */
 class TestExampleCurrencyModel extends Model implements Currencyable

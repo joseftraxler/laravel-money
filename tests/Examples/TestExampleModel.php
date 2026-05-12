@@ -27,6 +27,9 @@ class TestExampleModel extends Model
         ];
     }
 
+    /**
+     * @param string $key
+     */
     public function getRawAttribute($key): mixed
     {
         return $this->attributes[$key] ?? null;
