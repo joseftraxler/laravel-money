@@ -57,8 +57,7 @@ class MoneyDataProvider implements MoneyDataProviderInterface
         $result = filter_var(
             $this->config->get(
                 'money.default_precision',
-                $this->detectDefaultPrecision($currency),
-            ),
+            ) ?? $this->detectDefaultPrecision($currency),
             FILTER_VALIDATE_INT,
             FILTER_NULL_ON_FAILURE,
         ) ?? throw new \UnexpectedValueException("Invalid default precision, value must be an integer.");
