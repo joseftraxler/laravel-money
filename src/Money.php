@@ -41,9 +41,7 @@ class Money implements
     ) {
         $this->currency = Currency::of($currency);
         $this->decimal = self::normalizeAmountInMajorUnit($decimal, $this->currency);
-        /** @var numeric-string|"" $cents */
-        $cents = ltrim(str_replace('.', '', $this->decimal), '0');
-        $this->cents = $cents === '' ? '0' : $cents;
+        $this->cents = self::decimalToCents($this->decimal);
     }
 
     public function getDecimal(): string

@@ -19,6 +19,21 @@ trait MoneyNormalizer
         return self::normalizeAmount($amountInMajorUnit, $currency->getPrecision());
     }
 
+    /**
+     * @param numeric $decimal
+     * @return non-empty-string
+     */
+    private static function decimalToCents(string|float|int $decimal): string
+    {
+        $numbers = str_replace(['.', '-'], '', (string) $decimal);
+        $value = ltrim($numbers, '0');
+        if ($value === '') {
+            return '0';
+        }
+        $sign = $decimal[0] === '-' ? '-' : '';
+        return $sign . $value;
+    }
+
     /** @return numeric-string */
     private static function centsToDecimal(int|string $cents, int $precision): string
     {
@@ -65,6 +80,11 @@ trait MoneyNormalizer
             strlen($parts[1]) > $precision => substr($parts[1], 0, $precision),
             default => str_pad($parts[1], $precision, '0', STR_PAD_RIGHT),
         };
+
+        // converts negative zero to positive zero
+        if (trim($parts[0] . $parts[1], '0') === '-') {
+            $parts[0] = '0';
+        }
 
         /** @phpstan-ignore-next-line return.type */
         return $parts[0] . '.' . $parts[1];
