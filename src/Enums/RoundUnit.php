@@ -27,7 +27,7 @@ enum RoundUnit
     case HundredBillion;
     case Trillion;
 
-    /** @return positive-int */
+    /** @return non-negative-int */
     public function toCentsUnit(Currency $currency): int
     {
         /** @var positive-int */
