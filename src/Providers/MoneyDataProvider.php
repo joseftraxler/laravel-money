@@ -35,6 +35,11 @@ class MoneyDataProvider implements MoneyDataProviderInterface
         return $this->precisionCache[$currency->getCode()] ??= $this->resolvePrecision($currency);
     }
 
+    public function flushCache(): void
+    {
+        $this->precisionCache = [];
+    }
+
     /** @return non-negative-int */
     private function resolvePrecision(Currency $currency): int
     {
