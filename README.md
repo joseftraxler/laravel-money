@@ -14,7 +14,7 @@ Laravel Money provides a small immutable `Money` value object with currency-awar
 ## Features
 
 - Immutable `Money` value object
-- ISO 4217 currency code validation
+- ISO 4217-style currency code validation
 - Currency-specific precision support
 - Decimal and cents-based factory methods
 - Arithmetic operations powered by [`moneyphp/money`](https://github.com/moneyphp/money)
