@@ -16,7 +16,7 @@ namespace JosefTraxler\LaravelMoney\Facades;
  */
 class MoneyDataProvider extends \Illuminate\Support\Facades\Facade
 {
-    protected static function getFacadeAccessor()
+    protected static function getFacadeAccessor(): string
     {
         return \JosefTraxler\LaravelMoney\Contracts\MoneyDataProvider::class;
     }

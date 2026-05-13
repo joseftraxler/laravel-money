@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Facade;
  */
 class MoneyFormatter extends Facade
 {
-    protected static function getFacadeAccessor()
+    protected static function getFacadeAccessor(): string
     {
         return \JosefTraxler\LaravelMoney\Contracts\MoneyFormatter::class;
     }
