@@ -101,19 +101,10 @@ trait MoneyFactory
         if (strtoupper($name) === $name && strlen($name) === 3) {
             if (count($arguments) > 0) {
                 /** @var array{0: int|float|numeric-string} $arguments */
-                return static::fromCurrencyCode($name, $arguments[0]);
+                return static::fromDecimal($arguments[0], $name);
             }
-            return static::fromCurrencyCode($name);
+            return static::fromDecimal('0', $name);
         }
         throw new \BadMethodCallException("Method {$name} does not exist in " . static::class);
-    }
-
-    /**
-     * @param non-empty-string $code
-     * @param TDecimal $decimal
-     */
-    protected static function fromCurrencyCode(string $code, int|float|string $decimal = '0'): Contracts\Money
-    {
-        return static::fromDecimal($decimal, Currency::of($code));
     }
 }
