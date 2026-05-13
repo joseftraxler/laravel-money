@@ -155,8 +155,11 @@ trait MoneyCalculator
     private function assertSameCurrency(Money ...$money): void
     {
         foreach ($money as $m) {
-            if (!$this->getCurrency()->equals($m->getCurrency())) {
-                throw new MoneyMismatchCurrencyException('All money must have the same currency');
+            if (! $this->getCurrency()->equals($m->getCurrency())) {
+                throw MoneyMismatchCurrencyException::make(
+                    expected: $this->getCurrency(),
+                    actual: $m->getCurrency(),
+                );
             }
         }
     }
