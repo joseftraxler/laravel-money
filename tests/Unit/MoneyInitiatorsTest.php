@@ -121,4 +121,3 @@ it('creates new Money with negative decimal')
         ->getCents()->toBe('0')
         ->getCurrency()->toBe(Currency::of('EUR'))
 ;
-
