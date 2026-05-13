@@ -32,11 +32,10 @@ class MoneyCastBuilder
             fn (Model $model) => $currency,
             function (Money $money) use ($currency) {
                 if (! $money->getCurrency()->equals($currency)) {
-                    throw new MoneyMismatchCurrencyException(sprintf(
-                        'Money must be in currency of %s, %s given.',
-                        $money->getCurrency()->getCode(),
-                        ($currency instanceof Currencyable ? $currency->getCode() : $currency),
-                    ));
+                    throw MoneyMismatchCurrencyException::make(
+                        expected: $currency,
+                        actual: $money->getCurrency(),
+                    );
                 }
                 return [];
             },
