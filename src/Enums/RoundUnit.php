@@ -30,7 +30,6 @@ enum RoundUnit
     /** @return non-negative-int */
     public function toCentsUnit(Currency $currency): int
     {
-        /** @var positive-int */
         return match ($this) {
             self::Cent => 0,
             self::TenCents => 1,
