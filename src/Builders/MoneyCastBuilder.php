@@ -30,9 +30,13 @@ class MoneyCastBuilder
     {
         return $this->cast(
             fn (Model $model) => $currency,
-            function (?Money $money) use ($currency) {
-                if ( ! $money->getCurrency()->equals($currency)) {
-                    throw new MoneyMismatchCurrencyException('Money must be in currency of ' . $currency);
+            function (Money $money) use ($currency) {
+                if (! $money->getCurrency()->equals($currency)) {
+                    throw new MoneyMismatchCurrencyException(sprintf(
+                        'Money must be in currency of %s, %s given.',
+                        $money->getCurrency()->getCode(),
+                        ($currency instanceof Currencyable ? $currency->getCode() : $currency),
+                    ));
                 }
                 return [];
             },
@@ -47,15 +51,15 @@ class MoneyCastBuilder
     {
         return $this->cast(
             fn (Model $model) => $model->getAttribute($column),
-            fn (?Money $money): array => [
-                $column => is_null($money) ? null : $money->getCurrency()->getCode(),
+            fn (Money $money): array => [
+                $column => $money->getCurrency()->getCode(),
             ],
         );
     }
 
     /**
      * @param \Closure(Model $model): mixed $getCurrency
-     * @param \Closure(?Money $money): array<string, mixed> $setCurrency
+     * @param \Closure(Money $money): array<string, mixed> $setCurrency
      *
      * @return CastsAttributes<Money,Money>
      */
@@ -71,7 +75,7 @@ class MoneyCastBuilder
              * @param \Closure(mixed $value, Currencyable $currency): Money $getMoney
              * @param \Closure(Money $money): mixed $setMoney
              * @param \Closure(Model $model): mixed $getCurrency
-             * @param \Closure(?Money $money): array<string, mixed> $setCurrency
+             * @param \Closure(Money $money): array<string, mixed> $setCurrency
              */
             public function __construct(
                 private readonly \Closure $getMoney,
@@ -103,7 +107,7 @@ class MoneyCastBuilder
                 }
 
                 if (! $value instanceof Money) {
-                    if ( ! is_numeric($value)) {
+                    if (! is_numeric($value)) {
                         throw new \InvalidArgumentException('Value must be Money instance or a numeric value.');
                     }
                     return $value;
