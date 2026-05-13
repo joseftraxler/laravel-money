@@ -124,3 +124,9 @@ it('creates new Money with negative decimal')
         ->getDecimal()->toBe('0')
         ->getCents()->toBe('0')
 ;
+
+it('normalizes amount from cents with zero precision')
+    ->expect(Money::fromCents('+001', 'JPY'))
+    ->getDecimal()->toBe('1')
+    ->getCents()->toBe('1')
+;
