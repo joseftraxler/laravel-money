@@ -55,7 +55,7 @@ Example configuration:
 ```php
 return [
     'default_currency' => 'USD', // default currency used by casts when no currency is provided
-    'default_precision' => 2,
+    'default_precision' => null, // null = automatically detected
     'currencies' => [
         'JPY' => ['precision' => 0],
         'BHD' => ['precision' => 3],
@@ -265,6 +265,8 @@ $product = Product::find(1);
 $product->price->getDecimal(); // "19.99"
 $product->price->getCurrency()->getCode(); // "EUR"
 ```
+
+> ⚠️ When using a fixed currency cast, assigning a Money instance with a different currency throws MoneyMismatchCurrencyException.
 
 ### Dynamic currency column
 
