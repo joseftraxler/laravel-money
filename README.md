@@ -63,15 +63,6 @@ return [
 ];
 ```
 
-### Currency precision
-
-Precision is resolved in this order:
-
-1. `money.currencies.{CODE}.precision`
-2. `money.default_precision`
-
-Precision values are validated and cached per currency for performance.
-
 ## Basic usage
 
 ```php
@@ -97,6 +88,19 @@ In Blade:
 ```
 
 Currency codes are strict ISO 4217-style codes. They must contain exactly three letters.
+
+### Currency precision
+
+Precision is resolved in this order:
+
+1. `money.currencies.{CODE}.precision`
+2. `money.default_precision`
+3. package-detected default precision
+
+Precision values are validated and cached per currency for performance.
+
+> ⚠️ When a decimal value contains more fractional digits than the currency precision allows,
+the value is truncated to the configured precision.
 
 ## Creating money values
 
