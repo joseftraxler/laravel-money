@@ -40,7 +40,7 @@ trait MoneyNormalizer
     {
         if ($precision === 0) {
             /** @var numeric-string */
-            return (string) $cents;
+            return self::normalizeAmount($cents, 0);
         }
         $normalized = self::normalizeAmount($cents, 0);
         $sign = $normalized[0] === '-' ? '-' : '';
