@@ -6,6 +6,11 @@ on:
             - "main"
             - "v*.x"
             - "v*.x-*"
+    pull_request:
+        branches:
+            - "main"
+            - "v*.x"
+            - "v*.x-*"
 
 
 permissions:
