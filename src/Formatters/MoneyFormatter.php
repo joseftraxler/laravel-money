@@ -31,7 +31,7 @@ class MoneyFormatter implements \JosefTraxler\LaravelMoney\Contracts\MoneyFormat
 
         $currency = $currencyOrMoney instanceof Money
             ? $currencyOrMoney->getCurrency()
-            : $currencyOrMoney;
+            : \JosefTraxler\LaravelMoney\Currency::of($currencyOrMoney);
 
         return $cache[$locale . '-' . $currency->getCode()] ??= self::currencyFormatter(
             $locale,
