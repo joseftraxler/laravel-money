@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use JosefTraxler\LaravelMoney\Currency;
+use JosefTraxler\LaravelMoney\Exceptions\MoneyMismatchCurrencyException;
 use JosefTraxler\LaravelMoney\Money;
 use Tests\Examples\TestExampleCurrencyEnum;
 use Tests\Examples\TestExampleModel;
@@ -210,3 +211,14 @@ it('detects zero without float conversion', function () {
     expect($model2->price_eur->isZero())->toBeTrue();
     expect($model2->price_eur->getCents())->toBe('0');
 });
+
+it('rejects setting different currency into fixed currency cast')
+    ->expect(function () {
+        $model = new TestExampleModel();
+        $model->price_eur = Money::USD('10.00');
+    })
+    ->throws(MoneyMismatchCurrencyException::class);
+
+it('rejects invalid money cast storage mode', function () {
+    Money::castUsing(['currency', 'invalid']);
+})->throws(\InvalidArgumentException::class);
