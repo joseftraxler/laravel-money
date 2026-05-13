@@ -26,7 +26,7 @@ class Money implements
 
     /** @var numeric-string */
     private readonly string $decimal;
-    private readonly Contracts\Currencyable $currency;
+    private readonly Contracts\Currency $currency;
 
     /** @var numeric-string */
     private readonly string $cents;
