@@ -8,6 +8,7 @@ use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 use JosefTraxler\LaravelMoney\Contracts\Currencyable;
 use JosefTraxler\LaravelMoney\Contracts\Money;
+use JosefTraxler\LaravelMoney\Exceptions\MoneyMismatchCurrencyException;
 
 class MoneyCastBuilder
 {
@@ -29,7 +30,12 @@ class MoneyCastBuilder
     {
         return $this->cast(
             fn (Model $model) => $currency,
-            fn (?Money $money) => [],
+            function (?Money $money) use ($currency) {
+                if ( ! $money->getCurrency()->equals($currency)) {
+                    throw new MoneyMismatchCurrencyException('Money must be in currency of ' . $currency);
+                }
+                return [];
+            },
         );
     }
 
@@ -92,7 +98,14 @@ class MoneyCastBuilder
 
             public function set($model, string $key, $value, array $attributes)
             {
+                if ($value === null) {
+                    return null;
+                }
+
                 if (! $value instanceof Money) {
+                    if ( ! is_numeric($value)) {
+                        throw new \InvalidArgumentException('Value must be Money instance or a numeric value.');
+                    }
                     return $value;
                 }
 
