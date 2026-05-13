@@ -28,6 +28,7 @@ trait MoneyCastable
 
         $builder = match ($arguments[1] ?? 'decimal') {
             'cents' => AsMoney::inCents(),
+            /** @phpstan-ignore match.alwaysTrue */
             'decimal' => AsMoney::inDecimal(),
             default => throw new \InvalidArgumentException('Money cast storage must be "decimal" or "cents", ' . $arguments[1] . ' given.'),
         };
