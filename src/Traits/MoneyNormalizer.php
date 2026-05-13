@@ -25,7 +25,7 @@ trait MoneyNormalizer
      */
     private static function decimalToCents(string $decimal): string
     {
-        $numbers = str_replace(['.', '-'], '', (string) $decimal);
+        $numbers = str_replace(['.', '-'], '', $decimal);
         $value = ltrim($numbers, '0');
         if ($value === '') {
             return '0';
