@@ -70,12 +70,20 @@ trait MoneyNormalizer
 
         $parts = explode('.', ltrim($amount, '+'));
 
+        $sign = str_starts_with($parts[0], '-') ? '-' : '';
+        $parts[0] = ltrim(ltrim($parts[0], '-'), '0');
+        if ($parts[0] === '') {
+            $parts[0] = '0';
+        }
+        $parts[0] = $sign . $parts[0];
+
+        /** @var array{0: numeric-string, 1?: numeric-string} $parts */
+
         if ($precision === 0) {
             // converts negative zero to positive zero
-            if (trim($parts[0], '0') === '-') {
+            if ($parts[0] === '-0') {
                 return '0';
             }
-            /** @var numeric-string */
             return $parts[0];
         }
         $parts[1] ??= '0';
