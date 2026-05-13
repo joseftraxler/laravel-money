@@ -29,14 +29,14 @@ class MoneyFormatter implements \JosefTraxler\LaravelMoney\Contracts\MoneyFormat
 
         $locale ??= App::getLocale();
 
-        $money = $currencyOrMoney instanceof Money
-            ? $currencyOrMoney
-            : new \JosefTraxler\LaravelMoney\Money(0, $currencyOrMoney);
+        $currency = $currencyOrMoney instanceof Money
+            ? $currencyOrMoney->getCurrency()
+            : $currencyOrMoney;
 
-        return $cache[$locale . '-' . $money->getCurrency()->getCode()] ??= self::currencyFormatter(
+        return $cache[$locale . '-' . $currency->getCode()] ??= self::currencyFormatter(
             $locale,
-            $money->getCurrency(),
-        )->getSymbol(NumberFormatter::CURRENCY_SYMBOL) ?: $money->getCurrency()->getCode();
+            $currency,
+        )->getSymbol(NumberFormatter::CURRENCY_SYMBOL) ?: $currency->getCode();
     }
 
     public function humanReadable(Money $money, ?string $locale = null): string
