@@ -71,6 +71,10 @@ trait MoneyNormalizer
         $parts = explode('.', ltrim($amount, '+'));
 
         if ($precision === 0) {
+            // converts negative zero to positive zero
+            if (trim($parts[0], '0') === '-') {
+                return '0';
+            }
             /** @var numeric-string */
             return $parts[0];
         }
