@@ -7,6 +7,7 @@ namespace JosefTraxler\LaravelMoney\Traits;
 use JosefTraxler\LaravelMoney\Contracts\Money;
 use JosefTraxler\LaravelMoney\Enums\RoundMode;
 use JosefTraxler\LaravelMoney\Enums\RoundUnit;
+use JosefTraxler\LaravelMoney\Exceptions\MoneyMismatchCurrencyException;
 
 /**
  * @phpstan-require-implements \JosefTraxler\LaravelMoney\Contracts\MoneyGettable
@@ -14,16 +15,24 @@ use JosefTraxler\LaravelMoney\Enums\RoundUnit;
  */
 trait MoneyCalculator
 {
+    /**
+     * @throws MoneyMismatchCurrencyException
+     */
     public function add(Money ...$money): Money
     {
+        $this->assertSameCurrency(...$money);
         return static::fromCents(
             self::toMoneyPhp($this)->add(...array_map(self::toMoneyPhp(...), $money))->getAmount(),
             $this->getCurrency(),
         );
     }
 
+    /**
+     * @throws MoneyMismatchCurrencyException
+     */
     public function subtract(Money ...$money): Money
     {
+        $this->assertSameCurrency(...$money);
         return static::fromCents(
             self::toMoneyPhp($this)->subtract(...array_map(self::toMoneyPhp(...), $money))->getAmount(),
             $this->getCurrency(),
@@ -70,33 +79,54 @@ trait MoneyCalculator
         return $this->getCents() === '0';
     }
 
+    /**
+     * @throws MoneyMismatchCurrencyException
+     */
     public function equals(Money $money): bool
     {
-        return self::toMoneyPhp($this)->equals(self::toMoneyPhp($money));
+        $this->assertSameCurrency($money);
+        return $this->getDecimal() === $money->getDecimal();
     }
 
+    /**
+     * @throws MoneyMismatchCurrencyException
+     */
     public function greaterThan(Money $money): bool
     {
+        $this->assertSameCurrency($money);
         return self::toMoneyPhp($this)->greaterThan(self::toMoneyPhp($money));
     }
 
+    /**
+     * @throws MoneyMismatchCurrencyException
+     */
     public function greaterThanOrEqual(Money $money): bool
     {
+        $this->assertSameCurrency($money);
         return self::toMoneyPhp($this)->greaterThanOrEqual(self::toMoneyPhp($money));
     }
 
+    /**
+     * @throws MoneyMismatchCurrencyException
+     */
     public function lessThan(Money $money): bool
     {
+        $this->assertSameCurrency($money);
         return self::toMoneyPhp($this)->lessThan(self::toMoneyPhp($money));
     }
 
+    /**
+     * @throws MoneyMismatchCurrencyException
+     */
     public function lessThanOrEqual(Money $money): bool
     {
+        $this->assertSameCurrency($money);
         return self::toMoneyPhp($this)->lessThanOrEqual(self::toMoneyPhp($money));
     }
 
     public function compare(Money $money): int
     {
+        $this->assertSameCurrency($money);
         return self::toMoneyPhp($this)->compare(self::toMoneyPhp($money));
     }
 
@@ -117,5 +147,17 @@ trait MoneyCalculator
             $money->getCents(),
             new \Money\Currency($money->getCurrency()->getCode()),
         );
+    }
+
+    /**
+     * @throws MoneyMismatchCurrencyException
+     */
+    private function assertSameCurrency(Money ...$money): void
+    {
+        foreach ($money as $m) {
+            if (!$this->getCurrency()->equals($m->getCurrency())) {
+                throw new MoneyMismatchCurrencyException('All money must have the same currency');
+            }
+        }
     }
 }
