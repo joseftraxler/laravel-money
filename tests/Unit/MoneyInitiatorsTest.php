@@ -97,3 +97,28 @@ it('creates new Money using static magic method by currency code')
         ->getDecimal()->toBe('0.00')
         ->getCurrency()->toBe(Currency::of('USD'))
 ;
+
+it('creates new Money using static magic method by currency code with zero decimal')
+    ->expect(fn () => Money::EUR(0))
+        ->getDecimal()->toBe('0.00')
+        ->getCurrency()->toBe(Currency::of('EUR'))
+    ->and(fn () => Money::USD(0))
+        ->getDecimal()->toBe('0.00')
+        ->getCurrency()->toBe(Currency::of('USD'))
+;
+
+it('creates new Money with negative decimal')
+    ->expect(fn () => Money::EUR('-0.50'))
+        ->getDecimal()->toBe('-0.50')
+        ->getCents()->toBe('-50')
+        ->getCurrency()->toBe(Currency::of('EUR'))
+    ->and(fn () => Money::EUR('-0.05'))
+        ->getDecimal()->toBe('-0.05')
+        ->getCents()->toBe('-5')
+        ->getCurrency()->toBe(Currency::of('EUR'))
+    ->and(fn () => Money::EUR('-0.00'))
+        ->getDecimal()->toBe('0.00')
+        ->getCents()->toBe('0')
+        ->getCurrency()->toBe(Currency::of('EUR'))
+;
+
