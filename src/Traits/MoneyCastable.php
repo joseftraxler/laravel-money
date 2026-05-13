@@ -15,7 +15,7 @@ use JosefTraxler\LaravelMoney\Facades\MoneyDataProvider;
 trait MoneyCastable
 {
     /**
-     * @param array{0?: non-empty-string, 1?: "decimal"|"cents"} $arguments
+     * @param array{0?: non-empty-string, 1?: non-empty-string} $arguments
      * @return CastsAttributes<Contracts\Money, Contracts\Money>
      */
     public static function castUsing(array $arguments): CastsAttributes
@@ -28,7 +28,6 @@ trait MoneyCastable
 
         $builder = match ($arguments[1] ?? 'decimal') {
             'cents' => AsMoney::inCents(),
-            /** @phpstan-ignore match.alwaysTrue */
             'decimal' => AsMoney::inDecimal(),
             default => throw new \InvalidArgumentException('Money cast storage must be "decimal" or "cents", ' . $arguments[1] . ' given.'),
         };
