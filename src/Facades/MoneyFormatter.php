@@ -22,5 +22,4 @@ class MoneyFormatter extends Facade
     {
         return \JosefTraxler\LaravelMoney\Contracts\MoneyFormatter::class;
     }
-
 }
