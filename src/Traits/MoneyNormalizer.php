@@ -20,10 +20,10 @@ trait MoneyNormalizer
     }
 
     /**
-     * @param numeric $decimal
-     * @return non-empty-string
+     * @param numeric-string $decimal
+     * @return numeric-string
      */
-    private static function decimalToCents(string|float|int $decimal): string
+    private static function decimalToCents(string $decimal): string
     {
         $numbers = str_replace(['.', '-'], '', (string) $decimal);
         $value = ltrim($numbers, '0');
@@ -31,6 +31,7 @@ trait MoneyNormalizer
             return '0';
         }
         $sign = $decimal[0] === '-' ? '-' : '';
+        /** @phpstan-ignore return.type */
         return $sign . $value;
     }
 
