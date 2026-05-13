@@ -69,7 +69,6 @@ Precision is resolved in this order:
 
 1. `money.currencies.{CODE}.precision`
 2. `money.default_precision`
-3. package-detected default precision
 
 Precision values are validated and cached per currency for performance.
 
