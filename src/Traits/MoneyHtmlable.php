@@ -12,7 +12,7 @@ use JosefTraxler\LaravelMoney\Facades\MoneyFormatter;
  */
 trait MoneyHtmlable
 {
-    public function toHtml()
+    public function toHtml(): string
     {
         return $this->toHumanReadable();
     }
