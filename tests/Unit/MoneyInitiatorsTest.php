@@ -120,4 +120,7 @@ it('creates new Money with negative decimal')
         ->getDecimal()->toBe('0.00')
         ->getCents()->toBe('0')
         ->getCurrency()->toBe(Currency::of('EUR'))
+    ->and(fn () => Money::JPY('-0'))
+        ->getDecimal()->toBe('0')
+        ->getCents()->toBe('0')
 ;

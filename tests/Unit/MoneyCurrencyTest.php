@@ -56,3 +56,11 @@ it('throws exception when configured currency precision is negative', function (
     expect(fn () => Currency::of('XAC')->getPrecision())
         ->toThrow(\UnexpectedValueException::class);
 });
+
+it('uses default precision detection')
+    ->expect(Currency::of('JPY')->getPrecision())
+    ->toBe(0)
+    ->and(Currency::of('BHD')->getPrecision())
+    ->toBe(3)
+    ->and(Currency::of('EUR')->getPrecision())
+    ->toBe(2);
