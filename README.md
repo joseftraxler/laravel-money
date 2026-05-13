@@ -300,6 +300,9 @@ $order->currency; // "USD"
 
 When using a dynamic currency column, the package stores the currency code automatically.
 
+When assigning `null` to a money attribute using a dynamic currency column, only the amount column is set to `null`.
+The currency column is preserved intentionally, because the same currency column may be shared by multiple money attributes.
+
 ### Cents storage
 
 If you store money as cents, pass `cents` as the second-cast argument:
