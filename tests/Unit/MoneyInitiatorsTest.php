@@ -125,6 +125,22 @@ it('creates new Money with negative decimal')
         ->getCents()->toBe('0')
 ;
 
+it('normalizes negative zero from float values')
+    ->expect(fn () => Money::EUR(-0.001))
+        ->getDecimal()->toBe('0.00')
+        ->getCents()->toBe('0')
+        ->isNegative()->toBeFalse()
+        ->isZero()->toBeTrue()
+        ->equals(Money::EUR(0))->toBeTrue()
+    ->and(fn () => Money::EUR(-0.0))
+        ->getDecimal()->toBe('0.00')
+        ->isNegative()->toBeFalse()
+    ->and(fn () => Money::JPY(-0.4))
+        ->getDecimal()->toBe('0')
+        ->getCents()->toBe('0')
+        ->isNegative()->toBeFalse()
+;
+
 it('normalizes amount from cents with zero precision')
     ->expect(Money::fromCents('+001', 'JPY'))
         ->getDecimal()->toBe('1')

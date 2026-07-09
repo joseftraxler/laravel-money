@@ -57,8 +57,9 @@ trait MoneyNormalizer
     private static function normalizeAmount(int|float|string $amount, int $precision): string
     {
         if (is_float($amount) || is_int($amount)) {
-            /** @var numeric-string */
-            return sprintf(
+            // floats are rounded to the currency precision, the result then goes
+            // through the string normalization below (e.g. "-0.00" becomes "0.00")
+            $amount = sprintf(
                 '%.' . $precision . 'f',
                 $amount,
             );
