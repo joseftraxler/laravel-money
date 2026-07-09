@@ -99,8 +99,10 @@ Precision is resolved in this order:
 
 Precision values are validated and cached per currency for performance.
 
-> ⚠️ When a decimal value contains more fractional digits than the currency precision allows,
-the value is truncated to the configured precision.
+> ⚠️ When a decimal string value contains more fractional digits than the currency precision allows,
+the value is truncated to the configured precision. Float values are instead rounded to the configured
+precision, which compensates for binary floating-point representation (e.g. the float `1.15` is stored
+as `1.1499999…`, so truncation would yield `"1.14"`).
 
 ## Creating money values
 
