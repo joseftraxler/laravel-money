@@ -23,6 +23,23 @@ interface MoneyCalculator
      */
     public function divide(int|string $divisor): Money;
 
+    /**
+     * Splits the amount by the given ratios without losing any minor units.
+     *
+     * @template TKey of array-key
+     * @param non-empty-array<TKey, int<0, max>|float|numeric-string> $ratios
+     * @return non-empty-array<TKey, Money>
+     */
+    public function allocate(array $ratios): array;
+
+    /**
+     * Splits the amount into n equal parts without losing any minor units.
+     *
+     * @param positive-int $n
+     * @return non-empty-list<Money>
+     */
+    public function allocateTo(int $n): array;
+
     public function isNegative(): bool;
 
     public function isPositive(): bool;

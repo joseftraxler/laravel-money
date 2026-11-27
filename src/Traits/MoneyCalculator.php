@@ -8,6 +8,7 @@ use JosefTraxler\LaravelMoney\Contracts\Money;
 use JosefTraxler\LaravelMoney\Enums\RoundMode;
 use JosefTraxler\LaravelMoney\Enums\RoundUnit;
 use JosefTraxler\LaravelMoney\Exceptions\MoneyMismatchCurrencyException;
+use JosefTraxler\LaravelMoney\Support\Allocator;
 
 /**
  * @phpstan-require-implements \JosefTraxler\LaravelMoney\Contracts\MoneyGettable
@@ -61,6 +62,22 @@ trait MoneyCalculator
         return static::fromCents(
             self::toMoneyPhp($this)->divide($divisor)->getAmount(),
             $this->getCurrency(),
+        );
+    }
+
+    public function allocate(array $ratios): array
+    {
+        return array_map(
+            fn (string $cents): Money => static::fromCents($cents, $this->getCurrency()),
+            Allocator::allocate($this->getCents(), $ratios),
+        );
+    }
+
+    public function allocateTo(int $n): array
+    {
+        return array_map(
+            fn (string $cents): Money => static::fromCents($cents, $this->getCurrency()),
+            Allocator::allocateTo($this->getCents(), $n),
         );
     }
 

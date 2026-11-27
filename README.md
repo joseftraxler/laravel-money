@@ -18,6 +18,7 @@ Laravel Money provides a small immutable `Money` value object with currency-awar
 - Currency-specific precision support
 - Decimal and cents-based factory methods
 - Arithmetic operations powered by [`moneyphp/money`](https://github.com/moneyphp/money)
+- Lossless allocation of amounts by ratios or into equal parts
 - Human-readable formatting using PHP `intl`
 - Eloquent casts for decimal and cents database columns
 - Support for fixed currency and currency-column casts
@@ -188,6 +189,28 @@ $ten->divide(2)->getDecimal(); // "5.00"
 ```
 
 Arithmetic operations are currency-aware and delegated to `moneyphp/money`.
+
+### Allocation
+
+`divide()` rounds the result on its own, so splitting an amount into parts this way can lose minor units
+(e.g. `0.05 USD` divided by 3 gives three times `0.01`). Use `allocate()` or `allocateTo()` instead –
+the parts always add up exactly to the original amount and keep its currency.
+
+```php
+// split by ratios (int, float or numeric string), the keys of the ratios are preserved
+Money::USD('0.10')->allocate([1, 2]); // ["0.03", "0.07"]
+Money::USD('1.00')->allocate(['0.5', '0.25', '0.25']); // ["0.50", "0.25", "0.25"]
+Money::USD('100')->allocate(['alice' => 70, 'bob' => 30]); // ["alice" => "70.00", "bob" => "30.00"]
+
+// split into n equal parts
+Money::USD('0.05')->allocateTo(3); // ["0.02", "0.02", "0.01"]
+Money::USD('-0.05')->allocateTo(3); // ["-0.02", "-0.02", "-0.01"]
+```
+
+Leftover minor units are given to the parts with the largest remainder (with `allocateTo()` the first parts).
+A zero ratio gives a zero part. Numeric string ratios must be in decimal notation (e.g. `"0.25"`, not `"25e-2"`),
+float ratios are taken with 14 decimal places. Empty ratios, a non-numeric or negative ratio, a zero sum of ratios
+or `n < 1` throw `\InvalidArgumentException`.
 
 ## Comparisons
 
