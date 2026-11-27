@@ -64,17 +64,6 @@ trait MoneyCalculator
         );
     }
 
-    /**
-     * Splits the amount by the given ratios. The parts always add up exactly
-     * to the original amount; leftover minor units go to the parts with the
-     * largest remainders. Keys of the ratios are preserved.
-     *
-     * @template TKey of array-key
-     * @param array<TKey, int|float> $ratios
-     * @return array<TKey, Money>
-     *
-     * @throws \InvalidArgumentException
-     */
     public function allocate(array $ratios): array
     {
         if ($ratios === []) {
@@ -110,14 +99,6 @@ trait MoneyCalculator
         return $parts;
     }
 
-    /**
-     * Splits the amount into n equal parts. The parts always add up exactly
-     * to the original amount; leftover minor units go to the first parts.
-     *
-     * @return list<Money>
-     *
-     * @throws \InvalidArgumentException
-     */
     public function allocateTo(int $n): array
     {
         if ($n < 1) {
