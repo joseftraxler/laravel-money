@@ -35,7 +35,7 @@ final class Allocator
             Assert::numeric($ratio, 'Ratios must be integers, finite floats or numeric strings in decimal notation.');
             Assert::nonNegative($ratio, 'Ratios must be zero or positive.');
         }
-        $ratios = self::ratiosToIntegers($ratios);
+        $ratios = self::scaleRatios($ratios);
         $total = self::sum($ratios);
         Assert::positive($total, 'Sum of ratios must be greater than zero.');
 
@@ -78,14 +78,15 @@ final class Allocator
     }
 
     /**
-     * Converts the ratios to integers with the same proportions
-     * (e.g. [0.5, '1.25', 2] => ['50', '125', '200']). Floats are taken with 14 decimal places.
+     * Multiplies all ratios by the same power of ten so that none of them has a fractional part,
+     * which keeps their proportions (e.g. [0.5, '1.25', 2] => ['50', '125', '200']).
+     * Floats are taken with 14 decimal places.
      *
      * @template TKey of array-key
      * @param non-empty-array<TKey, int|float|numeric-string> $ratios
      * @return non-empty-array<TKey, numeric-string>
      */
-    private static function ratiosToIntegers(array $ratios): array
+    private static function scaleRatios(array $ratios): array
     {
         $decimals = array_map(self::ratioToDecimal(...), $ratios);
         $scale = max(array_map(
