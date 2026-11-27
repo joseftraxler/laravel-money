@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace JosefTraxler\LaravelMoney\Support;
 
 /**
- * Splits an amount in minor units into parts that always add up exactly to the original
+ * Splits an amount in cents into parts that always add up exactly to the original
  * amount. All calculations are done in exact integer arithmetic using bcmath.
  *
  * @internal
@@ -17,18 +17,18 @@ final class Allocator
     }
 
     /**
-     * Splits the amount by the given ratios. Leftover minor units go one by one to the parts
+     * Splits the amount by the given ratios. Leftover cents go one by one to the parts
      * with the largest remainders, on equal remainders to the first ones. Negative amounts are
      * split symmetrically to positive ones (e.g. -5 / 3 => -2, -2, -1).
      *
      * @template TKey of array-key
-     * @param numeric-string $amount amount in minor units
+     * @param numeric-string $cents
      * @param non-empty-array<TKey, int<0, max>|float|numeric-string> $ratios
-     * @return non-empty-array<TKey, numeric-string> parts in minor units
+     * @return non-empty-array<TKey, numeric-string> parts in cents
      *
      * @throws \InvalidArgumentException
      */
-    public static function allocate(string $amount, array $ratios): array
+    public static function allocate(string $cents, array $ratios): array
     {
         Assert::notEmpty($ratios, 'Cannot allocate to an empty list of ratios.');
         foreach ($ratios as $ratio) {
@@ -39,19 +39,19 @@ final class Allocator
         $total = self::sum($ratios);
         Assert::positive($total, 'Sum of ratios must be greater than zero.');
 
-        $negative = bccomp($amount, '0', 0) < 0;
-        $amount = $negative ? bcsub('0', $amount, 0) : $amount;
+        $negative = bccomp($cents, '0', 0) < 0;
+        $cents = $negative ? bcsub('0', $cents, 0) : $cents;
 
         $shares = [];
         $remainders = [];
         foreach ($ratios as $key => $ratio) {
-            $product = bcmul($amount, $ratio, 0);
+            $product = bcmul($cents, $ratio, 0);
             $shares[$key] = bcdiv($product, $total, 0);
             $remainders[$key] = bcmod($product, $total, 0);
         }
 
         // uasort is stable, so on equal remainders the first parts keep precedence
-        $leftover = (int) bcsub($amount, self::sum($shares), 0);
+        $leftover = (int) bcsub($cents, self::sum($shares), 0);
         uasort($remainders, static fn (string $a, string $b): int => bccomp($b, $a, 0));
         foreach (array_slice(array_keys($remainders), 0, $leftover) as $key) {
             $shares[$key] = bcadd($shares[$key], '1', 0);
@@ -63,18 +63,18 @@ final class Allocator
     }
 
     /**
-     * Splits the amount into n equal parts, leftover minor units go to the first parts.
+     * Splits the amount into n equal parts, leftover cents go to the first parts.
      *
-     * @param numeric-string $amount amount in minor units
+     * @param numeric-string $cents
      * @param positive-int $n
-     * @return non-empty-list<numeric-string> parts in minor units
+     * @return non-empty-list<numeric-string> parts in cents
      *
      * @throws \InvalidArgumentException
      */
-    public static function allocateTo(string $amount, int $n): array
+    public static function allocateTo(string $cents, int $n): array
     {
         Assert::positive($n, 'Number of parts must be greater than zero.');
-        return array_values(self::allocate($amount, array_fill(0, $n, 1)));
+        return array_values(self::allocate($cents, array_fill(0, $n, 1)));
     }
 
     /**
