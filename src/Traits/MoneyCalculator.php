@@ -8,6 +8,7 @@ use JosefTraxler\LaravelMoney\Contracts\Money;
 use JosefTraxler\LaravelMoney\Enums\RoundMode;
 use JosefTraxler\LaravelMoney\Enums\RoundUnit;
 use JosefTraxler\LaravelMoney\Exceptions\MoneyMismatchCurrencyException;
+use JosefTraxler\LaravelMoney\Support\Allocator;
 
 /**
  * @phpstan-require-implements \JosefTraxler\LaravelMoney\Contracts\MoneyGettable
@@ -66,45 +67,18 @@ trait MoneyCalculator
 
     public function allocate(array $ratios): array
     {
-        if ($ratios === []) {
-            throw new \InvalidArgumentException('Cannot allocate to an empty list of ratios');
-        }
-        foreach ($ratios as $ratio) {
-            /** @phpstan-ignore function.alreadyNarrowedType, booleanAnd.alwaysFalse */
-            if (! is_int($ratio) && ! is_float($ratio)) {
-                throw new \InvalidArgumentException('Ratios must be integers or floats');
-            }
-            if ($ratio < 0) {
-                throw new \InvalidArgumentException('Ratios must be zero or positive');
-            }
-        }
-        if (array_sum($ratios) <= 0) {
-            throw new \InvalidArgumentException('Sum of ratios must be greater than zero');
-        }
-
-        // allocate the absolute amount so negative amounts are split
-        // symmetrically to positive ones (e.g. -0.05 / 3 => -0.02, -0.02, -0.01)
-        $negative = $this->isNegative();
-        $moneyPhp = self::toMoneyPhp($this);
-        if ($negative) {
-            $moneyPhp = $moneyPhp->absolute();
-        }
-
-        $allocated = $moneyPhp->allocate($ratios);
-        $parts = [];
-        foreach (array_keys($ratios) as $key) {
-            $part = $negative ? $allocated[$key]->negative() : $allocated[$key];
-            $parts[$key] = static::fromCents($part->getAmount(), $this->getCurrency());
-        }
-        return $parts;
+        return array_map(
+            fn (string $cents): Money => static::fromCents($cents, $this->getCurrency()),
+            Allocator::allocate($this->getCents(), $ratios),
+        );
     }
 
     public function allocateTo(int $n): array
     {
-        if ($n < 1) {
-            throw new \InvalidArgumentException('Number of parts must be greater than zero');
-        }
-        return array_values($this->allocate(array_fill(0, $n, 1)));
+        return array_map(
+            fn (string $cents): Money => static::fromCents($cents, $this->getCurrency()),
+            Allocator::allocateTo($this->getCents(), $n),
+        );
     }
 
     public function isNegative(): bool

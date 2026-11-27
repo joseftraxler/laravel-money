@@ -27,15 +27,16 @@ interface MoneyCalculator
      * Splits the amount by the given ratios without losing any minor units.
      *
      * @template TKey of array-key
-     * @param array<TKey, int|float> $ratios
-     * @return array<TKey, Money>
+     * @param non-empty-array<TKey, int<0, max>|float|numeric-string> $ratios
+     * @return non-empty-array<TKey, Money>
      */
     public function allocate(array $ratios): array;
 
     /**
      * Splits the amount into n equal parts without losing any minor units.
      *
-     * @return list<Money>
+     * @param positive-int $n
+     * @return non-empty-list<Money>
      */
     public function allocateTo(int $n): array;
 

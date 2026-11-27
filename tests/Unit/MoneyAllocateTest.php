@@ -29,6 +29,19 @@ it('allocates money by ratios', function () {
         ->and(allocatedDecimals(Money::USD('1')->allocate([0.5, 0.25, 0.25])))->toBe(['0.50', '0.25', '0.25']);
 });
 
+it('allocates money by numeric string ratios', function () {
+    expect(allocatedDecimals(Money::USD('0.10')->allocate(['1', '2'])))->toBe(['0.03', '0.07'])
+        ->and(allocatedDecimals(Money::USD('1')->allocate(['0.5', '+0.25', 0.25])))->toBe(['0.50', '0.25', '0.25'])
+        ->and(allocatedDecimals(Money::USD('1')->allocate(['0.000000000000000000001', '0.000000000000000000003'])))
+        ->toBe(['0.25', '0.75']);
+});
+
+it('allocates money by very small and very large float ratios', function () {
+    expect(allocatedDecimals(Money::USD('0.05')->allocate([0.00001, 0.00002])))->toBe(['0.02', '0.03'])
+        ->and(allocatedDecimals(Money::USD('1')->allocate([1e20, 3e20])))->toBe(['0.25', '0.75'])
+        ->and(allocatedDecimals(Money::USD('1')->allocate([1e20, 1])))->toBe(['1.00', '0.00']);
+});
+
 it('allocates money into equal parts', function () {
     expect(allocatedDecimals(Money::USD('0.05')->allocateTo(3)))->toBe(['0.02', '0.02', '0.01'])
         ->and(allocatedDecimals(Money::USD('10')->allocateTo(4)))->toBe(['2.50', '2.50', '2.50', '2.50'])
@@ -88,6 +101,12 @@ it('throws exception for invalid ratios', function (array $ratios) {
     'empty ratios' => [[]],
     'negative ratio' => [[1, -1, 2]],
     'zero sum of ratios' => [[0, 0]],
+    'zero sum of string ratios' => [['0', '0.00']],
+    'negative string ratio' => [[1, '-0.5']],
+    'non-numeric string ratio' => [[1, 'abc']],
+    'string ratio in exponential notation' => [[1, '1e3']],
+    'infinite ratio' => [[1, INF]],
+    'NaN ratio' => [[1, NAN]],
 ]);
 
 it('throws exception for invalid number of parts', function (int $n) {

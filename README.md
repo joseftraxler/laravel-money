@@ -197,8 +197,9 @@ Arithmetic operations are currency-aware and delegated to `moneyphp/money`.
 the parts always add up exactly to the original amount and keep its currency.
 
 ```php
-// split by ratios, the keys of the ratios are preserved
+// split by ratios (int, float or numeric string), the keys of the ratios are preserved
 Money::USD('0.10')->allocate([1, 2]); // ["0.03", "0.07"]
+Money::USD('1.00')->allocate(['0.5', '0.25', '0.25']); // ["0.50", "0.25", "0.25"]
 Money::USD('100')->allocate(['alice' => 70, 'bob' => 30]); // ["alice" => "70.00", "bob" => "30.00"]
 
 // split into n equal parts
@@ -207,8 +208,9 @@ Money::USD('-0.05')->allocateTo(3); // ["-0.02", "-0.02", "-0.01"]
 ```
 
 Leftover minor units are given to the parts with the largest remainder (with `allocateTo()` the first parts).
-A zero ratio gives a zero part. Empty ratios, a negative ratio, a zero sum of ratios or `n < 1` throw
-`\InvalidArgumentException`.
+A zero ratio gives a zero part. Numeric string ratios must be in decimal notation (e.g. `"0.25"`, not `"25e-2"`),
+float ratios are taken with 14 decimal places. Empty ratios, a non-numeric or negative ratio, a zero sum of ratios
+or `n < 1` throw `\InvalidArgumentException`.
 
 ## Comparisons
 
