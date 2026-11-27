@@ -64,6 +64,68 @@ trait MoneyCalculator
         );
     }
 
+    /**
+     * Splits the amount by the given ratios. The parts always add up exactly
+     * to the original amount; leftover minor units go to the parts with the
+     * largest remainders. Keys of the ratios are preserved.
+     *
+     * @template TKey of array-key
+     * @param array<TKey, int|float> $ratios
+     * @return array<TKey, Money>
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function allocate(array $ratios): array
+    {
+        if ($ratios === []) {
+            throw new \InvalidArgumentException('Cannot allocate to an empty list of ratios');
+        }
+        foreach ($ratios as $ratio) {
+            /** @phpstan-ignore function.alreadyNarrowedType, booleanAnd.alwaysFalse */
+            if (! is_int($ratio) && ! is_float($ratio)) {
+                throw new \InvalidArgumentException('Ratios must be integers or floats');
+            }
+            if ($ratio < 0) {
+                throw new \InvalidArgumentException('Ratios must be zero or positive');
+            }
+        }
+        if (array_sum($ratios) <= 0) {
+            throw new \InvalidArgumentException('Sum of ratios must be greater than zero');
+        }
+
+        // allocate the absolute amount so negative amounts are split
+        // symmetrically to positive ones (e.g. -0.05 / 3 => -0.02, -0.02, -0.01)
+        $negative = $this->isNegative();
+        $moneyPhp = self::toMoneyPhp($this);
+        if ($negative) {
+            $moneyPhp = $moneyPhp->absolute();
+        }
+
+        $allocated = $moneyPhp->allocate($ratios);
+        $parts = [];
+        foreach (array_keys($ratios) as $key) {
+            $part = $negative ? $allocated[$key]->negative() : $allocated[$key];
+            $parts[$key] = static::fromCents($part->getAmount(), $this->getCurrency());
+        }
+        return $parts;
+    }
+
+    /**
+     * Splits the amount into n equal parts. The parts always add up exactly
+     * to the original amount; leftover minor units go to the first parts.
+     *
+     * @return list<Money>
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function allocateTo(int $n): array
+    {
+        if ($n < 1) {
+            throw new \InvalidArgumentException('Number of parts must be greater than zero');
+        }
+        return array_values($this->allocate(array_fill(0, $n, 1)));
+    }
+
     public function isNegative(): bool
     {
         return $this->getDecimal()[0] === '-';
